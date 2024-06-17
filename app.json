@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "BA_Prototype",
-    "slug": "BA_Prototype",
+    "name": "POD forecast",
+    "slug": "pod_forecast",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "landscape",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "podfft",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
