@@ -1,1 +1,0 @@
-export const surgerySite: "peri" | "internal" | undefined = undefined;

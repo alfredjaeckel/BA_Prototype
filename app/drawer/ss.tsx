@@ -1,28 +1,88 @@
-import React, { useState } from 'react';
-import { View, Text, Button } from 'react-native';
+import React from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { scale, scaleHeight, scaleWidth } from '@/utils/scaling';
+import { useCompletionStatus, useThresholdStatus } from '@/contexts/CompletionContext'; 
+import ExclusiveRadioButtons from '@/components/ExclusiveRadioButtons';
 
-const SSPage = () => {
-  const [answer, setAnswer] = useState(null); // Placeholder for user's answer
+const SSPage: React.FC = () => {
   const router = useRouter();
+  const { completionStatus, setCompletionStatus } = useCompletionStatus();
+  const { thresholdStatus, setThresholdStatus } = useThresholdStatus();
 
-  const handleDecision = (userAnswer: boolean) => {
-    if (userAnswer) {
-      // Navigate to the results page with the current page name as a parameter
-      router.push(`/drawer/result?from=ss`);
-    } else {
-      // Navigate to the next page in the sequence
-      router.push('/drawer/asa');
-    }
+  const handleNext = () => {
+    setCompletionStatus('ss', true);
+    router.push('/drawer/asa');
   };
 
   return (
-    <View>
-      <Text>Does the patient have a history of cardiac issues?</Text>
-      <Button title="Yes" onPress={() => handleDecision(true)} />
-      <Button title="No" onPress={() => handleDecision(false)} />
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.bigText}>Please select the patient's surgery site</Text>
+        <Text style={styles.litteText}>Low risk of developing POD if surgery site is peripheral</Text>
+      </View>
+      <ScrollView style={styles.container}>
+        <ExclusiveRadioButtons
+          option1Label="Non-peripheral"
+          option1Subtext="intracranial, intrathoracic, intra-abdominal or pelvic"
+          option2Label="Peripheral"
+          option2Subtext=""
+          value={thresholdStatus['ss']} // Pass true for option 2, false for option 1
+          onValueChange={(newValue) => setThresholdStatus('ss', newValue)}
+        />
+      </ScrollView>
+      <View style={styles.footer}>
+        <TouchableOpacity 
+          onPress={handleNext}
+          style={styles.nextButton}
+        >
+          <Text style={styles.nextButtonText}>Next</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: scale(25),
+    borderBottomWidth: 1,
+    height: scaleHeight(80),
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingHorizontal: scale(25),
+    borderTopWidth: 1,
+    height: scale(80),
+  },
+  bigText: {
+    fontSize: scale(20),
+    fontWeight: 'bold',
+  },
+  litteText: {
+    fontSize: scale(16),
+  },
+  nextButton: {
+    backgroundColor: '#0000FF', 
+    height: scale(60),
+    width: scale(220),
+    borderRadius: 8, 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+  },
+  nextButtonText: {
+    color: 'white',
+    fontSize: scale(20),
+    fontWeight: 'bold',
+  },
+});
 
 export default SSPage;
