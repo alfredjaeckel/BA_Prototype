@@ -26,24 +26,34 @@ type Condition = {
     { index: 15, name: "AIDS/HIV", value: false, weight: 6, showInfo: false , info:'' },
   ];
   
+  const initSumConditionValues = (conditions: Condition[]): number => {
+    console.log('intiSumConditionValues');
+    return conditions.reduce((sum, condition) => {
+      return condition.value ? sum + condition.weight : sum;
+    }, 0);
+  }
+
+  let conditionSum: number = initSumConditionValues(conditionState);
+
   export const setConditionValue = (index: number, value: boolean): void => {
     const condition = conditionState.find(c => c.index === index);
     if (condition) {
       condition.value = value;
+      conditionSum = value ? conditionSum + condition.weight : conditionSum - condition.weight;
     }
   };
   
   export const setConditionWeight = (index: number, weight: number): void => {
     const condition = conditionState.find(c => c.index === index);
     if (condition) {
+      if (condition.value) {
+        conditionSum = conditionSum - condition.weight + weight;
+      }
       condition.weight = weight;
     }
   };
   
-  export const sumConditionValues = (conditions: Condition[]): number => {
-    return conditions.reduce((sum, condition) => {
-      return condition.value ? sum + condition.weight : sum;
-    }, 0);
-  }
-  
+  export const sumConditionValues = (): number => {
+    return conditionSum;
+  };
   

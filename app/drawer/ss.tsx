@@ -12,7 +12,11 @@ const SSPage: React.FC = () => {
 
   const handleNext = () => {
     setCompletionStatus('ss', true);
-    router.push('/drawer/asa');
+    if (thresholdStatus['ss']) {
+      router.push('/drawer/result');
+    } else {
+      router.push('/drawer/asa');
+    }
   };
 
   return (

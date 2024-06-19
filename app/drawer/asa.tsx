@@ -12,7 +12,11 @@ const ASAPage: React.FC = () => {
 
   const handleNext = () => {
     setCompletionStatus('asa', true);
-    router.push('/drawer/frailty');
+    if (thresholdStatus['asa']) {
+      router.push('/drawer/result');
+    } else {
+      router.push('/drawer/frailty');
+    }
   };
 
   return (

@@ -1,24 +1,69 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import { Link, Stack, useRouter, useSegments } from 'expo-router';
 import { scaleWidth, scale } from '../utils/scaling';
-import { CompletionProvider, useCompletionStatus } from '../contexts/CompletionContext';
+import { CompletionProvider, useCompletionStatus, useThresholdStatus } from '../contexts/CompletionContext';
 
 const screenOptions = { headerShown: false };
 
 const Sidebar: React.FC = () => {
-  const segments = useSegments();
+  const router = useRouter(); // Ensure this is imported correctly from your router library
+  const segments = useSegments(); // Ensure this is imported correctly from your router library
   const { completionStatus, getFirstIncompletePage } = useCompletionStatus();
+  const { thresholdStatus, setThresholdStatus } = useThresholdStatus();
+  const [showModal, setShowModal] = React.useState(false);
 
   const isCurrentPage = (path: string) => segments.join('/') === path;
 
   const links = [
-    { href: '/drawer/cci', label: 'CCI', index: 'cci' },
-    { href: '/drawer/ss', label: 'Surgery Site', index: 'ss' },
-    { href: '/drawer/asa', label: 'ASA PS', index: 'asa' },
-    { href: '/drawer/frailty', label: 'Frailty', index: 'frailty' },
-    { href: '/drawer/result', label: 'Result', index: 'result' },
+    { href: '/drawer/cci', label: 'CCI', index: 'cci', order: 0},
+    { href: '/drawer/ss', label: 'Surgery Site', index: 'ss', order: 1},
+    { href: '/drawer/asa', label: 'ASA PS', index: 'asa', order: 2},
+    { href: '/drawer/frailty', label: 'Frailty', index: 'frailty', order: 3},
+    { href: '/drawer/result', label: 'Result', index: 'result', order: 4},
   ];
+
+  const prevLinkIndex = (index: string): string => {
+    switch(index) {
+      case 'cci':
+        return 'none';
+      case 'ss':
+        return 'cci';
+      case 'asa':
+        return 'ss';
+      case 'frailty':
+        return 'asa';
+      case 'result':
+        return 'none';
+      default:
+        return 'none';
+    }
+  }
+
+  const sidebarText = (index: string, threshold: boolean): string => {
+    switch(index){
+      case 'cci':
+        return threshold ? "CCI > 1" : "CCI ≤ 1";
+      case 'ss':
+        return threshold ? "Peripheral" : "Non-p eripheral";
+      case 'asa':
+        return threshold ? "ASA III / IV / V" : "ASA I / II";
+      case 'frailty':
+        return threshold ? "Pre-frail or frail" : "Stable";
+      default:
+        return "";
+    }
+  }
+
+  const handleLinkClick = (index: string) => {
+    if(prevLinkIndex(index) === 'none' || (completionStatus[prevLinkIndex(index)] && !thresholdStatus[prevLinkIndex(index)])) {
+      console.log(thresholdStatus[prevLinkIndex(index)]);
+      router.push(`/drawer/${index}`);
+      return;
+    } else {
+      setShowModal(true);
+    } 
+  };
 
   return (
     <View style={styles.sidebar}>
@@ -27,27 +72,60 @@ const Sidebar: React.FC = () => {
         <View style={styles.circleBar}>
           {links.map((link, idx) => (
             <View key={link.href} style={styles.circleContainer}>
-              <View style={[
-                styles.circle, 
-                link.index === getFirstIncompletePage() && styles.newCircle, 
-                completionStatus[link.index] && styles.completedCircle
-              ]} />
-              {idx < links.length - 1 && <View style={[styles.line, completionStatus[link.index] && styles.completedLine]} />}
+              <View
+                style={[
+                  styles.circle,
+                  link.index === getFirstIncompletePage() && !thresholdStatus[prevLinkIndex(link.index)] && styles.newCircle,
+                  completionStatus[link.index] && styles.completedCircle,
+                ]}
+              />
+              {idx < links.length - 1 && (
+                <View style={[styles.line, completionStatus[link.index] && !thresholdStatus[link.index]&& styles.completedLine]} />
+              )}
             </View>
           ))}
         </View>
         <View style={styles.links}>
           {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              style={[styles.link, isCurrentPage(link.href.substring(1)) && styles.boldLink]}
+            <View style={styles.linkbox}
+            key={link.href}
             >
-              {link.label}
-            </Link>
+              <TouchableOpacity
+                onPress={() => handleLinkClick(link.index)}
+              >
+                <Text
+                style={[
+                  styles.link, 
+                  isCurrentPage(link.href.substring(1)) && styles.boldLink,
+                  (!completionStatus[prevLinkIndex(link.index)] && prevLinkIndex(link.index) !== 'none') && styles.disabledLink,
+                ]}
+                >
+                  {link.label}
+                </Text>
+              </TouchableOpacity>
+              {completionStatus[link.index] && (
+                <Text style={styles.disabledLink}>
+                  {sidebarText(link.index, thresholdStatus[link.index])}
+                </Text>
+              )}
+            </View>     
           ))}
         </View>
       </View>
+
+      {/* Modal */}
+      <Modal visible={showModal} animationType="slide" transparent>
+        <TouchableWithoutFeedback onPress={() => setShowModal(false)}>
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalText}>Please complete the other pages first.</Text>
+              <TouchableOpacity onPress={() => setShowModal(false)} style={styles.modalButton}>
+                <Text style={styles.modalButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
   );
 };
@@ -55,11 +133,15 @@ const Sidebar: React.FC = () => {
 const MainLayout: React.FC = () => {
   const router = useRouter();
   const { getFirstIncompletePage } = useCompletionStatus();
+  const segments = useSegments(); 
+  
 
   useEffect(() => {
-    const firstIncompletePage = getFirstIncompletePage();
-    router.push(`/drawer/${firstIncompletePage}`);
-  }, [getFirstIncompletePage, router]);
+    if (segments.length === 0) { // Check if the current route is '/'
+      const firstIncompletePage = getFirstIncompletePage();
+      router.push(`/drawer/${firstIncompletePage}`);
+    }
+  }, [segments, getFirstIncompletePage, router]);
 
   return (
     <View style={styles.container}>
@@ -138,15 +220,49 @@ const styles = StyleSheet.create({
   links: {
     justifyContent: 'flex-start'
   },
+  linkbox: {
+    height: 80,
+    justifyContent: 'flex-start',
+  },
   link: {
     fontSize: scale(20),
-    height: 80,
     lineHeight: 40
   },
   boldLink: {
     fontWeight: 'bold'
   },
+  disabledLink: {
+    color: 'gray'
+  },
   content: {
     flex: 1
-  }
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: scale(20),
+    borderRadius: scale(10),
+    width: '80%',
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: scale(18),
+    marginBottom: scale(20),
+    textAlign: 'center',
+  },
+  modalButton: {
+    backgroundColor: 'blue',
+    paddingVertical: scale(10),
+    paddingHorizontal: scale(20),
+    borderRadius: scale(5),
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: scale(16),
+  },
 });

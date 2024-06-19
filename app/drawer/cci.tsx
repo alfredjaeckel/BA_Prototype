@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal, Button, TouchableWithoutFeedback } from 'react-native';
 import { useRouter } from 'expo-router';
 import Checkbox from '../../components/checkbox'; 
 import Selector from '../../components/selector'; 
 import { conditionState, setConditionWeight, setConditionValue, sumConditionValues } from '../../constants/ccidata';
 import { scale } from '../../utils/scaling';
-import { useCompletionStatus } from '../../contexts/CompletionContext'; 
+import { useCompletionStatus, useThresholdStatus } from '../../contexts/CompletionContext'; 
 
 const CciPage: React.FC = () => {
   const [conditions, setConditions] = useState(conditionState);
@@ -13,26 +13,42 @@ const CciPage: React.FC = () => {
   const [popupContent, setPopupContent] = useState({ name: '', info: '' });
   const router = useRouter();
   const { setCompletionStatus } = useCompletionStatus();
+  const { thresholdStatus, setThresholdStatus } = useThresholdStatus();
 
   useEffect(() => {
     setConditions([...conditionState]);
   }, []);
 
-  const handleCheckboxChange = (index: number, value: boolean) => {
+  useEffect(() => {
+    const sum = sumConditionValues();
+    if (thresholdStatus['cci'] !== (sum>1)) setThresholdStatus('cci', sum > 1);
+  }, [conditions, setThresholdStatus]);
+
+  const handleCheckboxChange = useCallback((index: number, value: boolean) => {
     const updatedConditions = conditions.map(condition => condition.index === index ? { ...condition, value } : condition);
     setConditions(updatedConditions);
     setConditionValue(index, value);
-  };
-
-  const handleSelectorChange = (index: number, weight: number) => {
+  }, [conditions]);
+  
+  const handleSelectorChange = useCallback((index: number, weight: number) => {
     const updatedConditions = conditions.map(condition => condition.index === index ? { ...condition, weight } : condition);
     setConditions(updatedConditions);
     setConditionWeight(index, weight);
-  };
+  }, [conditions]);
+  
 
   const handleQuestionMarkClick = (name: string, info: string) => {
     setPopupContent({ name, info });
     setIsPopupVisible(true);
+  };
+
+  const handleNext = () => {
+    setCompletionStatus('cci', true);
+    if (thresholdStatus['cci']) {
+      router.push('/drawer/result');
+    } else {
+      router.push('/drawer/ss');
+    }
   };
 
   return (
@@ -89,11 +105,11 @@ const CciPage: React.FC = () => {
             </View>
           </TouchableWithoutFeedback>
         </Modal>
-        <Text style={styles.sumText}>Total Weight: {sumConditionValues(conditions)}</Text>
+        <Text style={styles.sumText}>Total Weight: {sumConditionValues()}</Text>
       </ScrollView>
       <View style={styles.footer}>
         <TouchableOpacity 
-          onPress={() => {setCompletionStatus('cci', true); router.push('/drawer/ss');}} 
+          onPress={handleNext}
           style={styles.nextButton}
         >
           <Text style={styles.nextButtonText}>Next</Text>
