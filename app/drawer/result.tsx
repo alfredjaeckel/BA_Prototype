@@ -1,14 +1,14 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TouchableWithoutFeedback, Button } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useThresholdStatus } from '@/contexts/CompletionContext';
 import { scale } from '@/utils/scaling';
 
-const ResultPage = () => {
+const ResultPage: React.FC = () => {
   const router = useRouter();
-  const searchParams = useLocalSearchParams();
-  const fromPage = searchParams.from;
   const { thresholdStatus } = useThresholdStatus();
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const { showPopup } = useLocalSearchParams();
 
 const handleNext = () => {
   //router.push('/drawer/asa');
@@ -17,6 +17,14 @@ const handleNext = () => {
 const handleBack = () => {
   router.back();
 };
+
+useEffect(() => {
+  if (showPopup === 'true') {
+    setIsPopupVisible(true);
+    const timer = setTimeout(() => setIsPopupVisible(false), 5000); // 5 seconds
+    return () => clearTimeout(timer);
+  }
+}, [showPopup]);
 
 interface Content {
   index: string;
@@ -37,6 +45,7 @@ const result = (): string => {
     return 'cci'
   } 
   else if (thresholdStatus['ss']) {
+    console.log('renderss');
     return 'ss';
   }
   else if (thresholdStatus['asa']) {
@@ -70,29 +79,50 @@ const renderContentBasedOnThreshold = () => {
 };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.bigText}>{contents.find(item => item.index === result())?.header}</Text>
-        <Text style={styles.litteText}>{contents.find(item => item.index === result())?.subHeader}</Text>
-      </View>
-      <ScrollView style={styles.container}>
-        {renderContentBasedOnThreshold()}
-      </ScrollView>
-      <View style={styles.footer}>
-        <TouchableOpacity 
-          onPress={handleBack}
-          style={styles.backButton}
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.bigText}>{contents.find(item => item.index === result())?.header}</Text>
+          <Text style={styles.litteText}>{contents.find(item => item.index === result())?.subHeader}</Text>
+        </View>
+        <ScrollView style={styles.container}>
+          {renderContentBasedOnThreshold()}
+        </ScrollView>
+        <View style={styles.footer}>
+          <TouchableOpacity 
+            onPress={handleBack}
+            style={styles.backButton}
+          >
+            <Text style={styles.backButtonText}>Back</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={handleNext}
+            style={styles.nextButton}
+          >
+            <Text style={styles.nextButtonText}>Next</Text>
+          </TouchableOpacity>
+        </View>
+        {showPopup && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={isPopupVisible}
         >
-          <Text style={styles.backButtonText}>Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          onPress={handleNext}
-          style={styles.nextButton}
-        >
-          <Text style={styles.nextButtonText}>Next</Text>
-        </TouchableOpacity>
+          <TouchableWithoutFeedback onPress={() => setIsPopupVisible(false)}>
+            <View style={styles.modalOverlay}>
+              <TouchableWithoutFeedback>
+                <View style={styles.modalView}>
+                  <Text style={styles.modalTitle}>Threshold met!</Text>
+                  <Text style={styles.modalText}>Navigated here automatically.</Text>
+                  <Button title="Close" onPress={() => setIsPopupVisible(false)} />
+                  <Button title="Undo" onPress={() => handleBack()} />
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+        
+      )}
       </View>
-    </View>
   );
 };
 
@@ -149,6 +179,36 @@ const styles = StyleSheet.create({
     color: 'blue',
     fontSize: scale(20),
     fontWeight: 'bold',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
 });
 

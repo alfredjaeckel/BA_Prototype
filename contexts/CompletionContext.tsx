@@ -11,8 +11,14 @@ interface ThresholdContextType {
   setThresholdStatus: (page: string, threshold: boolean) => void;
 }
 
+interface VisitedContextType {
+  visitedStatus: Record<string, boolean>;
+  setVisitedStatus: (page: string, visited: boolean) => void;
+}
+
 const CompletionContext = createContext<CompletionContextType | undefined>(undefined);
 const ThresholdContext = createContext<ThresholdContextType | undefined>(undefined);
+const VisitedContext = createContext<VisitedContextType | undefined>(undefined);
 
 export const CompletionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [completionStatus, setCompletionStatusState] = useState<Record<string, boolean>>({
@@ -24,6 +30,14 @@ export const CompletionProvider: React.FC<{ children: ReactNode }> = ({ children
   });
 
   const [thresholdStatus, setThresholdStatusState] = useState<Record<string, boolean>>({
+    cci: false,
+    ss: false,
+    asa: false,
+    frailty: false,
+    result: false,
+  });
+
+  const [visitedStatus, setVisitedStatusState] = useState<Record<string, boolean>>({
     cci: false,
     ss: false,
     asa: false,
@@ -45,6 +59,13 @@ export const CompletionProvider: React.FC<{ children: ReactNode }> = ({ children
     }));
   }, []);
 
+  const setVisitedStatus = useCallback((page: string, visited: boolean) => {
+    setVisitedStatusState((prevStatus) => ({
+      ...prevStatus,
+      [page]: visited,
+    }));
+  }, []);
+
   const getFirstIncompletePage = useCallback(() => {
     const pages = ['cci', 'ss', 'asa', 'frailty', 'result'];
     return pages.find((page) => !completionStatus[page]) || 'cci';
@@ -53,7 +74,9 @@ export const CompletionProvider: React.FC<{ children: ReactNode }> = ({ children
   return (
     <CompletionContext.Provider value={{ completionStatus, setCompletionStatus, getFirstIncompletePage }}>
       <ThresholdContext.Provider value={{ thresholdStatus, setThresholdStatus }}>
-        {children}
+        <VisitedContext.Provider value={{ visitedStatus, setVisitedStatus }}>
+          {children}
+        </VisitedContext.Provider>
       </ThresholdContext.Provider>
     </CompletionContext.Provider>
   );
@@ -71,6 +94,14 @@ export const useThresholdStatus = () => {
   const context = useContext(ThresholdContext);
   if (!context) {
     throw new Error('useThresholdStatus must be used within a CompletionProvider');
+  }
+  return context;
+};
+
+export const useVisitedStatus = () => {
+  const context = useContext(VisitedContext);
+  if (!context) {
+    throw new Error('useVisitedStatus must be used within a CompletionProvider');
   }
   return context;
 };

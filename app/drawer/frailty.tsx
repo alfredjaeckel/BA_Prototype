@@ -1,17 +1,36 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { scale, scaleHeight, scaleWidth } from '@/utils/scaling';
-import { useCompletionStatus, useThresholdStatus } from '@/contexts/CompletionContext'; 
+import { useCompletionStatus, useThresholdStatus, useVisitedStatus } from '@/contexts/CompletionContext'; 
 import ExclusiveRadioButtons from '@/components/ExclusiveRadioButtons';
 
 const FrailtyPage: React.FC = () => {
   const router = useRouter();
   const { completionStatus, setCompletionStatus } = useCompletionStatus();
   const { thresholdStatus, setThresholdStatus } = useThresholdStatus();
+  const { visitedStatus, setVisitedStatus } = useVisitedStatus();
+  const [hasInteracted, setHasInteracted] = useState(false);
+
+  useEffect(() => {
+    if (!visitedStatus['frailty'] && hasInteracted) {
+      const timer = setTimeout(() => {
+        setCompletionStatus('frailty', true);
+        setVisitedStatus('frailty', true);
+        if (thresholdStatus['frailty']) {
+          router.push({
+            pathname: '/drawer/result',
+            params: { showPopup: 'true' }
+          });
+        }
+      }, 1000); // 1 second delay
+      return () => clearTimeout(timer);
+    }
+  }, [thresholdStatus]);
 
   const handleNext = () => {
     setCompletionStatus('frailty', true);
+    setVisitedStatus('frailty', true);
     router.push('/drawer/result');
   };
 
@@ -33,7 +52,10 @@ const FrailtyPage: React.FC = () => {
           option2Label="Frail or pre-frail"
           option2Subtext="patient exhibits one or more of the frailty criteria"
           value={thresholdStatus['frailty']} // Pass true for option 2, false for option 1
-          onValueChange={(newValue) => setThresholdStatus('frailty', newValue)}
+          onValueChange={(newValue) => {
+            setThresholdStatus('frailty', newValue); 
+            setHasInteracted(true);
+          }}
         />
       </ScrollView>
       <View style={styles.footer}>

@@ -5,7 +5,7 @@ import Checkbox from '../../components/checkbox';
 import Selector from '../../components/selector'; 
 import { conditionState, setConditionWeight, setConditionValue, sumConditionValues } from '../../constants/ccidata';
 import { scale } from '../../utils/scaling';
-import { useCompletionStatus, useThresholdStatus } from '../../contexts/CompletionContext'; 
+import { useCompletionStatus, useThresholdStatus, useVisitedStatus } from '../../contexts/CompletionContext'; 
 
 const CciPage: React.FC = () => {
   const [conditions, setConditions] = useState(conditionState);
@@ -13,7 +13,9 @@ const CciPage: React.FC = () => {
   const [popupContent, setPopupContent] = useState({ name: '', info: '' });
   const router = useRouter();
   const { setCompletionStatus } = useCompletionStatus();
+  const [hasInteracted, setHasInteracted] = useState(false);
   const { thresholdStatus, setThresholdStatus } = useThresholdStatus();
+  const { visitedStatus, setVisitedStatus } = useVisitedStatus();
 
   useEffect(() => {
     setConditions([...conditionState]);
@@ -21,16 +23,37 @@ const CciPage: React.FC = () => {
 
   useEffect(() => {
     const sum = sumConditionValues();
-    if (thresholdStatus['cci'] !== (sum>1)) setThresholdStatus('cci', sum > 1);
+    if (thresholdStatus['cci'] !== (sum > 1)) {
+      setThresholdStatus('cci', sum > 1);
+    }
   }, [conditions, setThresholdStatus]);
 
+  useEffect(() => {
+    if (!visitedStatus['cci'] && hasInteracted) {
+      const timer = setTimeout(() => {
+        setCompletionStatus('cci', true);
+        setVisitedStatus('cci', true);
+        if (thresholdStatus['cci']) {
+          router.push({
+            pathname: '/drawer/result',
+            params: { showPopup: 'true' }
+          });
+        }
+      }, 1000); // 1 second delay
+      return () => clearTimeout(timer);
+    }
+  }, [thresholdStatus]);
+  
+
   const handleCheckboxChange = useCallback((index: number, value: boolean) => {
+    setHasInteracted(true);
     const updatedConditions = conditions.map(condition => condition.index === index ? { ...condition, value } : condition);
     setConditions(updatedConditions);
     setConditionValue(index, value);
   }, [conditions]);
   
   const handleSelectorChange = useCallback((index: number, weight: number) => {
+    setHasInteracted(true);
     const updatedConditions = conditions.map(condition => condition.index === index ? { ...condition, weight } : condition);
     setConditions(updatedConditions);
     setConditionWeight(index, weight);
@@ -45,8 +68,10 @@ const CciPage: React.FC = () => {
   const handleNext = () => {
     setCompletionStatus('cci', true);
     if (thresholdStatus['cci']) {
+      setVisitedStatus('cci', true);
       router.push('/drawer/result');
     } else {
+      setVisitedStatus('cci', true);
       router.push('/drawer/ss');
     }
   };

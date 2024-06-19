@@ -1,20 +1,40 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { scale, scaleHeight, scaleWidth } from '@/utils/scaling';
-import { useCompletionStatus, useThresholdStatus } from '@/contexts/CompletionContext'; 
+import { useCompletionStatus, useThresholdStatus, useVisitedStatus } from '@/contexts/CompletionContext'; 
 import ExclusiveRadioButtons from '@/components/ExclusiveRadioButtons';
 
 const ASAPage: React.FC = () => {
   const router = useRouter();
   const { completionStatus, setCompletionStatus } = useCompletionStatus();
   const { thresholdStatus, setThresholdStatus } = useThresholdStatus();
+  const { visitedStatus, setVisitedStatus } = useVisitedStatus();
+  const [hasInteracted, setHasInteracted] = useState(false);
+
+  useEffect(() => {
+    if (!visitedStatus['asa'] && hasInteracted) {
+      const timer = setTimeout(() => {
+        setCompletionStatus('asa', true);
+        setVisitedStatus('asa', true);
+        if (thresholdStatus['asa']) {
+          router.push({
+            pathname: '/drawer/result',
+            params: { showPopup: 'true' }
+          });
+        }
+      }, 1000); // 1 second delay
+      return () => clearTimeout(timer);
+    }
+  }, [thresholdStatus]);
 
   const handleNext = () => {
     setCompletionStatus('asa', true);
     if (thresholdStatus['asa']) {
+      setVisitedStatus('asa', true);
       router.push('/drawer/result');
     } else {
+      setVisitedStatus('asa', true);
       router.push('/drawer/frailty');
     }
   };
@@ -23,6 +43,7 @@ const ASAPage: React.FC = () => {
     setCompletionStatus('asa', false);
     router.back();
   };
+
 
   return (
     <View style={styles.container}>
@@ -37,7 +58,10 @@ const ASAPage: React.FC = () => {
           option2Label="ASA III / IV / V"
           option2Subtext="a patient with at least moderate systemic disease"
           value={thresholdStatus['asa']} // Pass true for option 2, false for option 1
-          onValueChange={(newValue) => setThresholdStatus('asa', newValue)}
+          onValueChange={(newValue) => {
+            setThresholdStatus('asa', newValue); 
+            setHasInteracted(true);
+          }}
         />
       </ScrollView>
       <View style={styles.footer}>

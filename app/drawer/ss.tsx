@@ -1,20 +1,40 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { scale, scaleHeight, scaleWidth } from '@/utils/scaling';
-import { useCompletionStatus, useThresholdStatus } from '@/contexts/CompletionContext'; 
+import { useCompletionStatus, useThresholdStatus, useVisitedStatus } from '@/contexts/CompletionContext'; 
 import ExclusiveRadioButtons from '@/components/ExclusiveRadioButtons';
 
 const SSPage: React.FC = () => {
   const router = useRouter();
   const { completionStatus, setCompletionStatus } = useCompletionStatus();
   const { thresholdStatus, setThresholdStatus } = useThresholdStatus();
+  const { visitedStatus, setVisitedStatus } = useVisitedStatus();
+  const [hasInteracted, setHasInteracted] = useState(false);
 
+  useEffect(() => {
+    if (!visitedStatus['ss'] && hasInteracted) {
+      const timer = setTimeout(() => {
+        setCompletionStatus('ss', true);
+        setVisitedStatus('ss', true);
+        if (thresholdStatus['ss']) {
+          router.push({
+            pathname: '/drawer/result',
+            params: { showPopup: 'true' }
+          });
+        }
+      }, 1000); // 1 second delay
+      return () => clearTimeout(timer);
+    }
+  }, [thresholdStatus]);
+  
   const handleNext = () => {
     setCompletionStatus('ss', true);
     if (thresholdStatus['ss']) {
+      setVisitedStatus('ss', true);
       router.push('/drawer/result');
     } else {
+      setVisitedStatus('ss', true);
       router.push('/drawer/asa');
     }
   };
@@ -37,7 +57,10 @@ const SSPage: React.FC = () => {
           option2Label="Peripheral"
           option2Subtext=""
           value={thresholdStatus['ss']} // Pass true for option 2, false for option 1
-          onValueChange={(newValue) => setThresholdStatus('ss', newValue)}
+          onValueChange={(newValue) => {
+            setThresholdStatus('ss', newValue); 
+            setHasInteracted(true);
+          }}
         />
       </ScrollView>
       <View style={styles.footer}>
