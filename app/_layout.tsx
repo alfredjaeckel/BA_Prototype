@@ -7,8 +7,8 @@ import { CompletionProvider, useCompletionStatus, useThresholdStatus } from '../
 const screenOptions = { headerShown: false };
 
 const Sidebar: React.FC = () => {
-  const router = useRouter(); // Ensure this is imported correctly from your router library
-  const segments = useSegments(); // Ensure this is imported correctly from your router library
+  const router = useRouter();
+  const segments = useSegments();
   const { completionStatus, getFirstIncompletePage } = useCompletionStatus();
   const { thresholdStatus, setThresholdStatus } = useThresholdStatus();
   const [showModal, setShowModal] = React.useState(false);
@@ -57,7 +57,6 @@ const Sidebar: React.FC = () => {
 
   const handleLinkClick = (index: string) => {
     if(prevLinkIndex(index) === 'none' || (completionStatus[prevLinkIndex(index)] && !thresholdStatus[prevLinkIndex(index)])) {
-      console.log(thresholdStatus[prevLinkIndex(index)]);
       router.push(`/drawer/${index}`);
       return;
     } else {
@@ -137,7 +136,7 @@ const MainLayout: React.FC = () => {
   
 
   useEffect(() => {
-    if (segments.length === 0) { // Check if the current route is '/'
+    if (segments.length === 0) {
       const firstIncompletePage = getFirstIncompletePage();
       router.push(`/drawer/${firstIncompletePage}`);
     }

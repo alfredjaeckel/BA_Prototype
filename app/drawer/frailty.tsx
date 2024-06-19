@@ -15,6 +15,11 @@ const FrailtyPage: React.FC = () => {
     router.push('/drawer/result');
   };
 
+  const handleBack = () => {
+    setCompletionStatus('frailty', false);
+    router.back();
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -32,6 +37,12 @@ const FrailtyPage: React.FC = () => {
         />
       </ScrollView>
       <View style={styles.footer}>
+        <TouchableOpacity 
+          onPress={handleBack}
+          style={styles.backButton}
+        >
+          <Text style={styles.backButtonText}>Back</Text>
+        </TouchableOpacity>
         <TouchableOpacity 
           onPress={handleNext}
           style={styles.nextButton}
@@ -57,7 +68,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: scale(25),
     borderTopWidth: 1,
@@ -81,6 +92,19 @@ const styles = StyleSheet.create({
   },
   nextButtonText: {
     color: 'white',
+    fontSize: scale(20),
+    fontWeight: 'bold',
+  },
+  backButton: {
+    backgroundColor: '#CCCCFF', 
+    height: scale(60),
+    width: scale(220),
+    borderRadius: 8, 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+  },
+  backButtonText: {
+    color: 'blue',
     fontSize: scale(20),
     fontWeight: 'bold',
   },
