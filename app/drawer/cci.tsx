@@ -71,6 +71,17 @@ const CciPage: React.FC = () => {
                 <Selector
                   weight={condition.weight}
                   highWeight={3}
+                  minLable='Mild'
+                  maxLabel='Moderate to Severe'
+                  onWeightChange={(newWeight) => handleSelectorChange(condition.index, newWeight)}
+                />
+              )}
+              {condition.name === 'Diabetes mellitus' && (
+                <Selector
+                  weight={condition.weight}
+                  highWeight={2}
+                  minLable='Uncomplicated'
+                  maxLabel='End organ damage'
                   onWeightChange={(newWeight) => handleSelectorChange(condition.index, newWeight)}
                 />
               )}

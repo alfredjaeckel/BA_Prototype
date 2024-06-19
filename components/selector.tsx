@@ -4,23 +4,25 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 type SelectorProps = {
   weight: number;
   highWeight: number;
+  minLable: string;
+  maxLabel: string;
   onWeightChange: (newWeight: number) => void;
 };
 
-const Selector: React.FC<SelectorProps> = ({ weight, highWeight, onWeightChange }) => {
+const Selector: React.FC<SelectorProps> = ({ weight, highWeight, minLable, maxLabel, onWeightChange }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={[styles.option, weight === 1 && styles.selectedOption]}
         onPress={() => onWeightChange(1)}
       >
-        <Text style={styles.optionText}>Mild</Text>
+        <Text style={styles.optionText}>{minLable}</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.option, weight > 1 && styles.selectedOption]}
         onPress={() => onWeightChange(highWeight)}
       >
-        <Text style={styles.optionText}>Moderate</Text>
+        <Text style={styles.optionText}>{maxLabel}</Text>
       </TouchableOpacity>
     </View>
   );
