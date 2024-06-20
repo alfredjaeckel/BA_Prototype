@@ -65,19 +65,69 @@ const result = (): string => {
 const renderContentBasedOnThreshold = () => {
   // Example logic: render different content if ASA PS is III or higher
   if (thresholdStatus['cci']) {
-    return <Text style={styles.bigText}>High risk CCI</Text>;
+    return(
+    <View style={[styles.container, styles.riskContainer]}>
+      <View style={styles.flexRow}>
+        <Text style={styles.bigText}>The patient is at </Text>
+        <Text style={[styles.bigText, styles.veryBold]}>HIGH RISK</Text>
+        <Text style={styles.bigText}> of developing POD</Text>
+      </View>
+      <Text style={styles.bigText}>Patients with a CCI {'>'} 1 develop POD in 35% of cases</Text>
+      <Text style={styles.bigText}>Patient is in need of further screening</Text>
+    </View>
+    );
   } 
   else if (thresholdStatus['ss']) {
-    return <Text style={styles.bigText}>Low risk based on SS.</Text>;
+    return(
+    <View style={[styles.container, styles.riskContainer]}>
+      <View style={styles.flexRow}>
+        <Text style={styles.bigText}>The patient is at </Text>
+        <Text style={[styles.bigText, styles.veryBold]}>LOW RISK</Text>
+        <Text style={styles.bigText}> of developing POD</Text>
+      </View>
+      <Text style={styles.bigText}>Patients with peripheral surgery develop POD in 10% of cases</Text>
+      <Text style={styles.bigText}>Patient is not in need of further screening</Text>
+    </View>
+    );
   }
   else if (thresholdStatus['asa']) {
-    return <Text style={styles.bigText}>High risk based on ASA PS.</Text>;
+    return(
+      <View style={[styles.container, styles.riskContainer]}>
+        <View style={styles.flexRow}>
+          <Text style={styles.bigText}>The patient is at </Text>
+          <Text style={[styles.bigText, styles.veryBold]}>HIGH RISK</Text>
+          <Text style={styles.bigText}> of developing POD</Text>
+        </View>
+        <Text style={styles.bigText}>Patients with ASA PS III / IV / V develop POD in 30% of cases</Text>
+        <Text style={styles.bigText}>Patient is in need of further screening</Text>
+      </View>
+      );
   }
   else if (thresholdStatus['frailty']) {
-    return <Text style={styles.bigText}>High risk based on Frailty.</Text>;
+    return(
+      <View style={[styles.container, styles.riskContainer]}>
+        <View style={styles.flexRow}>
+          <Text style={styles.bigText}>The patient is at </Text>
+          <Text style={[styles.bigText, styles.veryBold]}>HIGH RISK</Text>
+          <Text style={styles.bigText}> of developing POD</Text>
+        </View>
+        <Text style={styles.bigText}>Patients with who are frail or pre-frail develop POD in 33% of cases</Text>
+        <Text style={styles.bigText}>Patient is in need of further screening</Text>
+      </View>
+      );
   }
   else {
-    return <Text style={styles.bigText}>Low risk based on Frailty.</Text>;
+    return(
+      <View style={[styles.container, styles.riskContainer]}>
+        <View style={styles.flexRow}>
+          <Text style={styles.bigText}>The patient is at </Text>
+          <Text style={[styles.bigText, styles.veryBold]}>LOW RISK</Text>
+          <Text style={styles.bigText}> of developing POD</Text>
+        </View>
+        <Text style={styles.bigText}>Patients with who are stable according to the frailty assesment develop POD in 15% of cases</Text>
+        <Text style={styles.bigText}>Patient is not in need of further screening</Text>
+      </View>
+      );
   }
 };
 
@@ -161,6 +211,9 @@ const styles = StyleSheet.create({
     fontSize: scale(20),
     fontWeight: 'bold',
   },
+  veryBold: {
+    fontWeight: '900',
+  },
   litteText: {
     fontSize: scale(16),
     textAlign: 'right',
@@ -233,6 +286,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  flexRow: {
+    flexDirection: 'row',
+  },
+  riskContainer:{
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
   },
 });
 
