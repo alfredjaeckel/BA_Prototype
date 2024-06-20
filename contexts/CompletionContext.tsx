@@ -17,9 +17,16 @@ interface VisitedContextType {
   setVisitedStatus: (page: string, visited: boolean) => void;
 }
 
+interface OverrideContextType {
+  overrideStatus: Record<string, boolean>;
+  setOverrideStatus: (page: string, override: boolean) => void;
+}
+
+
 const CompletionContext = createContext<CompletionContextType | undefined>(undefined);
 const ThresholdContext = createContext<ThresholdContextType | undefined>(undefined);
 const VisitedContext = createContext<VisitedContextType | undefined>(undefined);
+const OverrideContext = createContext<OverrideContextType | undefined>(undefined);
 
 export const CompletionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [completionStatus, setCompletionStatusState] = useState<Record<string, boolean>>({
@@ -46,6 +53,11 @@ export const CompletionProvider: React.FC<{ children: ReactNode }> = ({ children
     result: false,
   });
 
+  const [overrideStatus, setOverrideStatusState] = useState<Record<string, boolean>>({
+    override: false,
+    newValue: false,
+  });
+
   const setCompletionStatus = useCallback((page: string, status: boolean) => {
     setCompletionStatusState((prevStatus) => ({
       ...prevStatus,
@@ -67,6 +79,13 @@ export const CompletionProvider: React.FC<{ children: ReactNode }> = ({ children
     }));
   }, []);
 
+  const setOverrideStatus = useCallback((page: string, override: boolean) => {
+    setOverrideStatusState((prevStatus) => ({
+      ...prevStatus,
+      [page]: override,
+    }));
+  }, []);
+
   const getFirstIncompletePage = useCallback(() => {
     const pages = ['cci', 'ss', 'asa', 'frailty', 'result'];
     return pages.find((page) => !completionStatus[page]) || 'cci';
@@ -81,7 +100,9 @@ export const CompletionProvider: React.FC<{ children: ReactNode }> = ({ children
     <CompletionContext.Provider value={{ completionStatus, setCompletionStatus, getFirstIncompletePage, getLastCompletePage }}>
       <ThresholdContext.Provider value={{ thresholdStatus, setThresholdStatus }}>
         <VisitedContext.Provider value={{ visitedStatus, setVisitedStatus }}>
-          {children}
+          <OverrideContext.Provider value={{ overrideStatus, setOverrideStatus }}>
+            {children}
+          </OverrideContext.Provider>
         </VisitedContext.Provider>
       </ThresholdContext.Provider>
     </CompletionContext.Provider>
@@ -111,3 +132,11 @@ export const useVisitedStatus = () => {
   }
   return context;
 };
+
+export const useOverrideStatus = () => {
+  const context = useContext(OverrideContext);
+  if (!context) {
+    throw new Error('useOverrideStatus must be used within a CompletionProvider');
+  }
+  return context;
+}

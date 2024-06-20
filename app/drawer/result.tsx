@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TouchableWithoutFeedback, Button } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useCompletionStatus, useThresholdStatus } from '@/contexts/CompletionContext';
+import { useCompletionStatus, useThresholdStatus, useOverrideStatus } from '@/contexts/CompletionContext';
 import { scale } from '@/utils/scaling';
 import { FA5Style } from '@expo/vector-icons/build/FontAwesome5';
 import NoteTakingModal from './NoteTakingModal';
+import Checkbox from '@/components/checkbox';
 
 const ResultPage: React.FC = () => {
   const router = useRouter();
   const { thresholdStatus, setThresholdStatus} = useThresholdStatus();
   const { setCompletionStatus, getLastCompletePage } = useCompletionStatus();
+  const { overrideStatus, setOverrideStatus } = useOverrideStatus();
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isNoteModalVisible, setIsNoteModalVisible] = React.useState(false);
   const { showPopup } = useLocalSearchParams();
+  const [overrideHighRisk, setOverrideHighRisk] = useState(false);
+
 
 const handleNext = () => {
   setCompletionStatus('result', true);
@@ -32,6 +36,10 @@ useEffect(() => {
     return () => clearTimeout(timer);
   }
 }, [showPopup]);
+
+useEffect(() => {
+  setOverrideHighRisk(overrideStatus['override'] && overrideStatus['newValue']);
+}, [])
 
 interface Content {
   index: string;
@@ -59,8 +67,17 @@ useEffect(() => {
   } else {
     setThresholdStatus('result', false);
   }
-  console.log('im running');
 }, []);
+
+useEffect(() => {
+  setOverrideStatus('override', overrideHighRisk);
+  setOverrideStatus('newValue', overrideHighRisk);
+}, [overrideHighRisk])
+
+const handleOverride = () => {
+  setOverrideHighRisk(!overrideHighRisk)
+};
+
 
 const getResultContent = () => {
   if (thresholdStatus['cci']) {
@@ -154,6 +171,14 @@ const renderContentBasedOnThreshold = () => {
         <ScrollView style={styles.container}>
           {renderContentBasedOnThreshold()}
         </ScrollView>
+        <View style={styles.flexRow}>
+          <Checkbox
+            label=""
+            value={overrideStatus['override']}
+            onValueChange={handleOverride}
+          />
+          <Text style={styles.bigText}>The Patient is in need of further screening anyway</Text>
+        </View>
         <TouchableOpacity onPress={() => setIsNoteModalVisible(true)} style={styles.notesButton}>
           <Text style={styles.notesButtonText}>Take Notes</Text>
         </TouchableOpacity>

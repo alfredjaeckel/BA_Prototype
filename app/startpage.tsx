@@ -2,13 +2,14 @@
 import React from 'react';
 import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useCompletionStatus, useThresholdStatus, useVisitedStatus } from '@/contexts/CompletionContext'; 
+import { useCompletionStatus, useThresholdStatus, useVisitedStatus, useOverrideStatus } from '@/contexts/CompletionContext'; 
 import { scale } from '@/utils/scaling';
 
 const StartPage: React.FC = () => {
   const router = useRouter();
   const {completionStatus} = useCompletionStatus();
   const {thresholdStatus} = useThresholdStatus();
+  const {overrideStatus} = useOverrideStatus();
 
   const handleStart = () => {
     if(completionStatus['result']){
@@ -20,14 +21,28 @@ const StartPage: React.FC = () => {
   };
 
   const forecastStatus = () => {
-    if(completionStatus['result'] && thresholdStatus['result']){
-        return <Text style={styles.bigText}>POD Risk Forecast is high: Patient needs further screening </Text>
+
+    if(overrideStatus['override'] && overrideStatus['newValue']){
+      return(
+        <Text style={styles.bigText}>Manually Set: Patient needs further screening</Text>
+      )
+    }
+    else if(overrideStatus['override']){
+      return <Text style={styles.bigText}>Manually Set: Patient needs further screening</Text>
+    }
+    else if(completionStatus['result'] && thresholdStatus['result']){
+      return <Text style={styles.bigText}>POD Risk Forecast is high: Patient needs further screening</Text>
+    }
+    else if(completionStatus['result'] && thresholdStatus['result']){
+        return <Text style={styles.bigText}>POD Risk Forecast is high: Patient needs further screening</Text>
     }
     else if(completionStatus['result']){
         return <Text style={styles.bigText}>POD Risk Forecast is low: Patient does not needs further screening</Text>
     }
     else{
-        return <Text style={styles.bigText}>Start POD Risk Forecast</Text>
+        return(
+          <Text style={styles.bigText}>Start POD Risk Forecast</Text>
+        )
     }
   }
 

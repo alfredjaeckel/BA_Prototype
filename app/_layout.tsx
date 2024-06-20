@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import { Link, Stack, useRouter, useSegments } from 'expo-router';
 import { scaleWidth, scale } from '../utils/scaling';
-import { CompletionProvider, useCompletionStatus, useThresholdStatus } from '../contexts/CompletionContext';
+import { CompletionProvider } from '../contexts/CompletionContext';
 import { NotesProvider } from '@/contexts/NotesContext';
 
 const screenOptions = { headerShown: false };
@@ -18,6 +18,7 @@ export default function RootLayout() {
       router.push(`startpage`);
     }
   }, [segments, router]);
+
   
   return (
     <CompletionProvider>

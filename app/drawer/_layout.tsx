@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import { Link, Stack, useRouter, useSegments } from 'expo-router';
 import { scaleWidth, scale } from '@/utils/scaling';
-import { CompletionProvider, useCompletionStatus, useThresholdStatus } from '@/contexts/CompletionContext';
+import { CompletionProvider, useCompletionStatus, useThresholdStatus, useOverrideStatus } from '@/contexts/CompletionContext';
 import { NotesProvider } from '@/contexts/NotesContext';
 
 const screenOptions = { headerShown: false };
@@ -12,7 +12,12 @@ const Sidebar: React.FC = () => {
   const segments = useSegments();
   const { completionStatus, getFirstIncompletePage } = useCompletionStatus();
   const { thresholdStatus, setThresholdStatus } = useThresholdStatus();
+  const { setOverrideStatus } = useOverrideStatus();
   const [showModal, setShowModal] = React.useState(false);
+
+  useEffect(() => {
+    setOverrideStatus('override', false);
+  }, [thresholdStatus]);
 
   const isCurrentPage = (path: string) => segments.join('/') === path;
 
