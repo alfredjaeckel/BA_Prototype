@@ -7,163 +7,25 @@ import { NotesProvider } from '@/contexts/NotesContext';
 
 const screenOptions = { headerShown: false };
 
-const Sidebar: React.FC = () => {
+
+
+export default function RootLayout() {
   const router = useRouter();
-  const segments = useSegments();
-  const { completionStatus, getFirstIncompletePage } = useCompletionStatus();
-  const { thresholdStatus, setThresholdStatus } = useThresholdStatus();
-  const [showModal, setShowModal] = React.useState(false);
-
-  const isCurrentPage = (path: string) => segments.join('/') === path;
-
-  const links = [
-    { href: '/drawer/cci', label: 'CCI', index: 'cci', order: 0},
-    { href: '/drawer/ss', label: 'Surgery Site', index: 'ss', order: 1},
-    { href: '/drawer/asa', label: 'ASA PS', index: 'asa', order: 2},
-    { href: '/drawer/frailty', label: 'Frailty', index: 'frailty', order: 3},
-    { href: '/drawer/result', label: 'Result', index: 'result', order: 4},
-  ];
-
-  const prevLinkIndex = (index: string): string => {
-    switch(index) {
-      case 'cci':
-        return 'none';
-      case 'ss':
-        return 'cci';
-      case 'asa':
-        return 'ss';
-      case 'frailty':
-        return 'asa';
-      case 'result':
-        return 'none';
-      default:
-        return 'none';
-    }
-  }
-
-  const sidebarText = (index: string, threshold: boolean): string => {
-    switch(index){
-      case 'cci':
-        return threshold ? "CCI > 1" : "CCI ≤ 1";
-      case 'ss':
-        return threshold ? "Peripheral" : "Non-p eripheral";
-      case 'asa':
-        return threshold ? "ASA III / IV / V" : "ASA I / II";
-      case 'frailty':
-        return threshold ? "Pre-frail or frail" : "Stable";
-      default:
-        return "";
-    }
-  }
-
-  const handleLinkClick = (index: string) => {
-    if(prevLinkIndex(index) === 'none' || (completionStatus[prevLinkIndex(index)] && !thresholdStatus[prevLinkIndex(index)])) {
-      router.push(`/drawer/${index}`);
-      return;
-    } else {
-      setShowModal(true);
-    } 
-  };
-
-  return (
-    <View style={styles.sidebar}>
-      <Text style={styles.title}>POD Risk Forecast</Text>
-      <View style={styles.linkWrapper}>
-        <View style={styles.circleBar}>
-          {links.map((link, idx) => (
-            <View key={link.href} style={styles.circleContainer}>
-              <View
-                style={[
-                  styles.circle,
-                  link.index === getFirstIncompletePage() && !thresholdStatus[prevLinkIndex(link.index)] && styles.newCircle,
-                  completionStatus[link.index] && styles.completedCircle,
-                ]}
-              />
-              {idx < links.length - 1 && (
-                <View style={[styles.line, completionStatus[link.index] && !thresholdStatus[link.index]&& styles.completedLine]} />
-              )}
-            </View>
-          ))}
-        </View>
-        <View style={styles.links}>
-          {links.map((link) => (
-            <View style={styles.linkbox}
-            key={link.href}
-            >
-              <TouchableOpacity
-                onPress={() => handleLinkClick(link.index)}
-              >
-                <Text
-                style={[
-                  styles.link, 
-                  isCurrentPage(link.href.substring(1)) && styles.boldLink,
-                  (!completionStatus[prevLinkIndex(link.index)] && prevLinkIndex(link.index) !== 'none') && styles.disabledLink,
-                ]}
-                >
-                  {link.label}
-                </Text>
-              </TouchableOpacity>
-              {completionStatus[link.index] && (
-                <Text style={styles.disabledLink}>
-                  {sidebarText(link.index, thresholdStatus[link.index])}
-                </Text>
-              )}
-            </View>     
-          ))}
-        </View>
-      </View>
-
-      {/* Modal */}
-      <Modal visible={showModal} animationType="slide" transparent>
-        <TouchableWithoutFeedback onPress={() => setShowModal(false)}>
-          <View style={styles.modalBackground}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalText}>Please complete the other pages first.</Text>
-              <TouchableOpacity onPress={() => setShowModal(false)} style={styles.modalButton}>
-                <Text style={styles.modalButtonText}>OK</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
-    </View>
-  );
-};
-
-const MainLayout: React.FC = () => {
-  const router = useRouter();
-  const { getFirstIncompletePage } = useCompletionStatus();
   const segments = useSegments(); 
-  
 
   useEffect(() => {
     if (segments.length === 0) {
-      const firstIncompletePage = getFirstIncompletePage();
-      router.push(`/drawer/${firstIncompletePage}`);
+      router.push(`startpage`);
     }
-  }, [segments, getFirstIncompletePage, router]);
-
-  return (
-    <View style={styles.container}>
-      <Sidebar />
-      <View style={styles.content}>
-        <Stack>
-          <Stack.Screen name="drawer/cci" options={screenOptions} />
-          <Stack.Screen name="drawer/ss" options={screenOptions} />
-          <Stack.Screen name="drawer/asa" options={screenOptions} />
-          <Stack.Screen name="drawer/frailty" options={screenOptions} />
-          <Stack.Screen name="drawer/result" options={screenOptions} />
-        </Stack>
-      </View>
-    </View>
-  );
-};
-
-export default function RootLayout() {
+  }, [segments, router]);
+  
   return (
     <CompletionProvider>
       <NotesProvider>
-        <MainLayout />
+        <Stack>
+          <Stack.Screen name="startpage" options={{ headerShown: false }} />
+          <Stack.Screen name="drawer" options={{ headerShown: false }} />
+        </Stack>
       </NotesProvider>
     </CompletionProvider>
   );

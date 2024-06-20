@@ -7,7 +7,7 @@ import ExclusiveRadioButtons from '@/components/ExclusiveRadioButtons';
 
 const SSPage: React.FC = () => {
   const router = useRouter();
-  const { completionStatus, setCompletionStatus } = useCompletionStatus();
+  const { completionStatus, setCompletionStatus, getLastCompletePage } = useCompletionStatus();
   const { thresholdStatus, setThresholdStatus } = useThresholdStatus();
   const { visitedStatus, setVisitedStatus } = useVisitedStatus();
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -41,7 +41,7 @@ const SSPage: React.FC = () => {
 
   const handleBack = () => {
     setCompletionStatus('ss', false);
-    router.back();
+    router.push('/drawer/cci');
   };
 
   return (

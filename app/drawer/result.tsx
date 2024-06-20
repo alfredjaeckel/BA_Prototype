@@ -1,24 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TouchableWithoutFeedback, Button } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useThresholdStatus } from '@/contexts/CompletionContext';
+import { useCompletionStatus, useThresholdStatus } from '@/contexts/CompletionContext';
 import { scale } from '@/utils/scaling';
 import { FA5Style } from '@expo/vector-icons/build/FontAwesome5';
 import NoteTakingModal from './NoteTakingModal';
 
 const ResultPage: React.FC = () => {
   const router = useRouter();
-  const { thresholdStatus } = useThresholdStatus();
+  const { thresholdStatus, setThresholdStatus} = useThresholdStatus();
+  const { setCompletionStatus, getLastCompletePage } = useCompletionStatus();
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isNoteModalVisible, setIsNoteModalVisible] = React.useState(false);
   const { showPopup } = useLocalSearchParams();
 
 const handleNext = () => {
-  //router.push('/drawer/asa');
+  setCompletionStatus('result', true);
+  router.push('/startpage');
 };
 
 const handleBack = () => {
-  router.back();
+  setCompletionStatus('result', false)
+  const lastCompletePage = getLastCompletePage();
+  router.push(`/drawer/${lastCompletePage}`);
 };
 
 useEffect(() => {
@@ -43,24 +47,34 @@ const contents: Content[] = [
   {index: 'frailtylow', header: 'Please select the patients frailty status', subHeader: 'Low risk of developing POD if stable \n High risk of developing POD if pre-frail or frail', back: '/drawer/frailty'},
 ];
 
-const result = (): string => {
+useEffect(() => {
   if (thresholdStatus['cci']) {
-    return 'cci'
-  } 
-  else if (thresholdStatus['ss']) {
-    console.log('renderss');
+    setThresholdStatus('result', true);
+  } else if (thresholdStatus['ss']) {
+    setThresholdStatus('result', false);
+  } else if (thresholdStatus['asa']) {
+    setThresholdStatus('result', true);
+  } else if (thresholdStatus['frailty']) {
+    setThresholdStatus('result', true);
+  } else {
+    setThresholdStatus('result', false);
+  }
+  console.log('im running');
+}, []);
+
+const getResultContent = () => {
+  if (thresholdStatus['cci']) {
+    return 'cci';
+  } else if (thresholdStatus['ss']) {
     return 'ss';
-  }
-  else if (thresholdStatus['asa']) {
+  } else if (thresholdStatus['asa']) {
     return 'asa';
-  }
-  else if (thresholdStatus['frailty']) {
+  } else if (thresholdStatus['frailty']) {
     return 'frailtyhigh';
-  }
-  else {
+  } else {
     return 'frailtylow';
   }
-}
+};
 
 const renderContentBasedOnThreshold = () => {
   // Example logic: render different content if ASA PS is III or higher
@@ -134,8 +148,8 @@ const renderContentBasedOnThreshold = () => {
   return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.bigText}>{contents.find(item => item.index === result())?.header}</Text>
-          <Text style={styles.litteText}>{contents.find(item => item.index === result())?.subHeader}</Text>
+          <Text style={styles.bigText}>{contents.find(item => item.index === getResultContent())?.header}</Text>
+          <Text style={styles.litteText}>{contents.find(item => item.index === getResultContent())?.subHeader}</Text>
         </View>
         <ScrollView style={styles.container}>
           {renderContentBasedOnThreshold()}

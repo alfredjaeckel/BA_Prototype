@@ -4,6 +4,7 @@ interface CompletionContextType {
   completionStatus: Record<string, boolean>;
   setCompletionStatus: (page: string, status: boolean) => void;
   getFirstIncompletePage: () => string;
+  getLastCompletePage: () => string;
 }
 
 interface ThresholdContextType {
@@ -71,8 +72,13 @@ export const CompletionProvider: React.FC<{ children: ReactNode }> = ({ children
     return pages.find((page) => !completionStatus[page]) || 'cci';
   }, [completionStatus]);
 
+  const getLastCompletePage = useCallback(() => {
+    const pages = ['frailty', 'asa', 'ss', 'cci'];
+    return pages.find((page) => completionStatus[page]) || 'cci';
+  }, [completionStatus]);
+
   return (
-    <CompletionContext.Provider value={{ completionStatus, setCompletionStatus, getFirstIncompletePage }}>
+    <CompletionContext.Provider value={{ completionStatus, setCompletionStatus, getFirstIncompletePage, getLastCompletePage }}>
       <ThresholdContext.Provider value={{ thresholdStatus, setThresholdStatus }}>
         <VisitedContext.Provider value={{ visitedStatus, setVisitedStatus }}>
           {children}
