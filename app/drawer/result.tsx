@@ -3,11 +3,14 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TouchableW
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useThresholdStatus } from '@/contexts/CompletionContext';
 import { scale } from '@/utils/scaling';
+import { FA5Style } from '@expo/vector-icons/build/FontAwesome5';
+import NoteTakingModal from './NoteTakingModal';
 
 const ResultPage: React.FC = () => {
   const router = useRouter();
   const { thresholdStatus } = useThresholdStatus();
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [isNoteModalVisible, setIsNoteModalVisible] = React.useState(false);
   const { showPopup } = useLocalSearchParams();
 
 const handleNext = () => {
@@ -87,6 +90,9 @@ const renderContentBasedOnThreshold = () => {
         <ScrollView style={styles.container}>
           {renderContentBasedOnThreshold()}
         </ScrollView>
+        <TouchableOpacity onPress={() => setIsNoteModalVisible(true)} style={styles.notesButton}>
+          <Text style={styles.notesButtonText}>Take Notes</Text>
+        </TouchableOpacity>
         <View style={styles.footer}>
           <TouchableOpacity 
             onPress={handleBack}
@@ -101,7 +107,6 @@ const renderContentBasedOnThreshold = () => {
             <Text style={styles.nextButtonText}>Next</Text>
           </TouchableOpacity>
         </View>
-        {showPopup && (
         <Modal
           animationType="slide"
           transparent={true}
@@ -120,8 +125,14 @@ const renderContentBasedOnThreshold = () => {
             </View>
           </TouchableWithoutFeedback>
         </Modal>
-        
-      )}
+        <Modal
+        visible={isNoteModalVisible}
+        animationType="slide"
+        transparent={false}
+        onRequestClose={() => setIsNoteModalVisible(false)}
+        >
+          <NoteTakingModal onClose={() => setIsNoteModalVisible(false)} />
+        </Modal>
       </View>
   );
 };
@@ -163,6 +174,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center', 
   },
   nextButtonText: {
+    color: 'white',
+    fontSize: scale(20),
+    fontWeight: 'bold',
+  },
+  notesButton: {
+    backgroundColor: '#0000FF', 
+    height: scale(60),
+    width: scale(220),
+    borderRadius: 8, 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+  },
+  notesButtonText: {
     color: 'white',
     fontSize: scale(20),
     fontWeight: 'bold',

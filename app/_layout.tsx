@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Modal, TouchableWithoutFeedba
 import { Link, Stack, useRouter, useSegments } from 'expo-router';
 import { scaleWidth, scale } from '../utils/scaling';
 import { CompletionProvider, useCompletionStatus, useThresholdStatus } from '../contexts/CompletionContext';
+import { NotesProvider } from '@/contexts/NotesContext';
 
 const screenOptions = { headerShown: false };
 
@@ -161,7 +162,9 @@ const MainLayout: React.FC = () => {
 export default function RootLayout() {
   return (
     <CompletionProvider>
-      <MainLayout />
+      <NotesProvider>
+        <MainLayout />
+      </NotesProvider>
     </CompletionProvider>
   );
 }
