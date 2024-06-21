@@ -10,7 +10,7 @@ import Checkbox from '@/components/checkbox';
 const ResultPage: React.FC = () => {
   const router = useRouter();
   const { thresholdStatus, setThresholdStatus} = useThresholdStatus();
-  const { setCompletionStatus, getLastCompletePage } = useCompletionStatus();
+  const { completionStatus, setCompletionStatus, getLastCompletePage } = useCompletionStatus();
   const { overrideStatus, setOverrideStatus } = useOverrideStatus();
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isNoteModalVisible, setIsNoteModalVisible] = React.useState(false);
@@ -24,7 +24,6 @@ const handleNext = () => {
 };
 
 const handleBack = () => {
-  setCompletionStatus('result', false)
   const lastCompletePage = getLastCompletePage();
   router.push(`/drawer/${lastCompletePage}`);
 };

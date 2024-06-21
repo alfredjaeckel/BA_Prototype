@@ -40,7 +40,6 @@ const SSPage: React.FC = () => {
   };
 
   const handleBack = () => {
-    setCompletionStatus('ss', false);
     router.push('/drawer/cci');
   };
 

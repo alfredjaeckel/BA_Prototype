@@ -37,7 +37,6 @@ const FrailtyPage: React.FC = () => {
   };
 
   const handleBack = () => {
-    setCompletionStatus('frailty', false);
     router.push('/drawer/asa');
   };
 

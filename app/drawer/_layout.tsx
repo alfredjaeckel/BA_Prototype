@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import { Link, Stack, useRouter, useSegments } from 'expo-router';
 import { scaleWidth, scale } from '@/utils/scaling';
@@ -10,7 +10,7 @@ const screenOptions = { headerShown: false };
 const Sidebar: React.FC = () => {
   const router = useRouter();
   const segments = useSegments();
-  const { completionStatus, getFirstIncompletePage } = useCompletionStatus();
+  const { completionStatus, setCompletionStatus, getFirstIncompletePage } = useCompletionStatus();
   const { thresholdStatus, setThresholdStatus } = useThresholdStatus();
   const { setOverrideStatus } = useOverrideStatus();
   const [showIncompleteModal, setShowIncompleteModal] = React.useState(false);
@@ -37,6 +37,30 @@ const Sidebar: React.FC = () => {
       router.push('startpage');
     }
   }, [exitHighRisk]);
+
+
+  useEffect(() => {
+    setCompletionStatus('ss', false);
+    setCompletionStatus('asa', false);
+    setCompletionStatus('frailty', false);
+    setCompletionStatus('result', false);
+  }, [thresholdStatus['cci']]);
+
+  useEffect(() => {
+    setCompletionStatus('asa', false);
+    setCompletionStatus('frailty', false);
+    setCompletionStatus('result', false);
+  }, [thresholdStatus['ss']]);
+
+  useEffect(() => {
+    setCompletionStatus('frailty', false);
+    setCompletionStatus('result', false);
+  }, [thresholdStatus['asa']]);
+
+  useEffect(() => {
+    setCompletionStatus('result', false);
+  }, [thresholdStatus['frailty']]);
+  
 
   const isCurrentPage = (path: string) => segments.join('/') === path;
 
@@ -79,6 +103,7 @@ const Sidebar: React.FC = () => {
         return "";
     }
   }
+
 
   const handleLinkClick = (index: string) => {
     if(prevLinkIndex(index) === 'none' || (completionStatus[prevLinkIndex(index)] && !thresholdStatus[prevLinkIndex(index)])) {

@@ -40,7 +40,6 @@ const ASAPage: React.FC = () => {
   };
 
   const handleBack = () => {
-    setCompletionStatus('asa', false);
     router.push('/drawer/ss');
   };
 
