@@ -28,7 +28,7 @@ const StartPage: React.FC = () => {
       )
     }
     else if(overrideStatus['override']){
-      return <Text style={styles.bigText}>Manually Set: Patient needs further screening</Text>
+      return <Text style={styles.bigText}>Manually Set: Patient does not need further screening</Text>
     }
     else if(completionStatus['result'] && thresholdStatus['result']){
       return <Text style={styles.bigText}>POD Risk Forecast is high: Patient needs further screening</Text>

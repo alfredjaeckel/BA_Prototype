@@ -13,11 +13,30 @@ const Sidebar: React.FC = () => {
   const { completionStatus, getFirstIncompletePage } = useCompletionStatus();
   const { thresholdStatus, setThresholdStatus } = useThresholdStatus();
   const { setOverrideStatus } = useOverrideStatus();
-  const [showModal, setShowModal] = React.useState(false);
+  const [showIncompleteModal, setShowIncompleteModal] = React.useState(false);
+  const [showExitModal, setShowExitModal] = React.useState(false);
+  const [exitLowRisk, setExitLowRisk] = React.useState(false);
+  const [exitHighRisk, setExitHighRisk] = React.useState(false);
 
   useEffect(() => {
     setOverrideStatus('override', false);
   }, [thresholdStatus]);
+  
+  useEffect(() => {
+    if(exitLowRisk){
+      setOverrideStatus('override', true);
+      setOverrideStatus('newValue', false);
+      router.push('startpage');
+    }
+  }, [exitLowRisk]);
+
+  useEffect(() => {
+    if(exitHighRisk){
+      setOverrideStatus('override', true);
+      setOverrideStatus('newValue', true);
+      router.push('startpage');
+    }
+  }, [exitHighRisk]);
 
   const isCurrentPage = (path: string) => segments.join('/') === path;
 
@@ -66,7 +85,7 @@ const Sidebar: React.FC = () => {
       router.push(`/drawer/${index}`);
       return;
     } else {
-      setShowModal(true);
+      setShowIncompleteModal(true);
     } 
   };
 
@@ -117,14 +136,43 @@ const Sidebar: React.FC = () => {
           ))}
         </View>
       </View>
-
-      {/* Modal */}
-      <Modal visible={showModal} animationType="slide" transparent>
-        <TouchableWithoutFeedback onPress={() => setShowModal(false)}>
+      <TouchableOpacity 
+          onPress={() => setShowExitModal(true)}
+          style={styles.exitButton}
+        >
+          <Text style={styles.exitButtonText}>Exit</Text>
+      </TouchableOpacity>
+      {/* Exit Modal */}
+      <Modal visible={showExitModal} animationType="slide" transparent>
+        <TouchableWithoutFeedback onPress={() => setShowExitModal(false)}>
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalText}>Are you shure you want to exit?</Text>
+              <View style={styles.exitButtonContainer}>
+                <TouchableOpacity onPress={() => [setShowExitModal(false), setExitLowRisk(true)]} style={styles.modalButton}>
+                  <Text style={styles.modalButtonText}>Exit and set risk to low</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => [setShowExitModal(false), setExitHighRisk(true)]} style={styles.modalButton}>
+                  <Text style={styles.modalButtonText}>Exit and set risk to high</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => [setShowExitModal(false), router.push('startpage')]} style={styles.modalButton}>
+                  <Text style={styles.modalButtonText}>Exit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setShowExitModal(false)} style={styles.modalButton}>
+                  <Text style={styles.modalButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+      {/* Incomplete Modal */}
+      <Modal visible={showIncompleteModal} animationType="slide" transparent>
+        <TouchableWithoutFeedback onPress={() => setShowIncompleteModal(false)}>
           <View style={styles.modalBackground}>
             <View style={styles.modalContent}>
               <Text style={styles.modalText}>Please complete the other pages first.</Text>
-              <TouchableOpacity onPress={() => setShowModal(false)} style={styles.modalButton}>
+              <TouchableOpacity onPress={() => setShowIncompleteModal(false)} style={styles.modalButton}>
                 <Text style={styles.modalButtonText}>OK</Text>
               </TouchableOpacity>
             </View>
@@ -178,16 +226,17 @@ const styles = StyleSheet.create({
   sidebar: {
     width: scaleWidth(300),
     backgroundColor: '#f0f0f0',
-    padding: 10,
-    borderRightWidth: 1
+    padding: scale(20),
+    paddingTop: scale(25),
+    paddingBottom: scale(10),
+    borderRightWidth: 1,
+    justifyContent: 'space-between',
   },
   title: {
     fontSize: scale(24),
-    margin: scale(20)
   },
   linkWrapper: {
-    marginTop: 80,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   circleBar: {
     flexDirection: 'column',
@@ -263,9 +312,26 @@ const styles = StyleSheet.create({
     paddingVertical: scale(10),
     paddingHorizontal: scale(20),
     borderRadius: scale(5),
+    marginVertical: scale(5),
   },
   modalButtonText: {
     color: 'white',
     fontSize: scale(16),
+  },
+  exitButtonContainer: {
+    padding: scale(20),
+  },
+  exitButton: {
+    backgroundColor: '#FFCCCC',
+    height: scale(60),
+    width: scale(220),
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  exitButtonText: {
+    color: 'red',
+    fontSize: scale(20),
+    fontWeight: 'bold',
   },
 });
