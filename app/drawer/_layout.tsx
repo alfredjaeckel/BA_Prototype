@@ -4,6 +4,7 @@ import { Link, Stack, useRouter, useSegments } from 'expo-router';
 import { scaleWidth, scale } from '@/utils/scaling';
 import { CompletionProvider, useCompletionStatus, useThresholdStatus, useOverrideStatus } from '@/contexts/CompletionContext';
 import { NotesProvider } from '@/contexts/NotesContext';
+import NoteTakingModal from './NoteTakingModal';
 
 const screenOptions = { headerShown: false };
 
@@ -17,6 +18,7 @@ const Sidebar: React.FC = () => {
   const [showExitModal, setShowExitModal] = React.useState(false);
   const [exitLowRisk, setExitLowRisk] = React.useState(false);
   const [exitHighRisk, setExitHighRisk] = React.useState(false);
+  const [isNoteModalVisible, setIsNoteModalVisible] = React.useState(false);
 
   useEffect(() => {
     setOverrideStatus('override', false);
@@ -187,9 +189,21 @@ const Sidebar: React.FC = () => {
                   <Text style={styles.modalButtonText}>Cancel</Text>
                 </TouchableOpacity>
               </View>
+              <TouchableOpacity onPress={() => [setShowExitModal(false), setIsNoteModalVisible(true), console.log('press')]} style={styles.notesButton}>
+                <Text style={styles.notesButtonText}>Take Notes</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </TouchableWithoutFeedback>
+      </Modal>
+      {/* Note Modal*/}
+      <Modal
+        visible={isNoteModalVisible}
+        animationType="slide"
+        transparent={false}
+        onRequestClose={() => setIsNoteModalVisible(false)}
+        >
+          <NoteTakingModal onClose={() => [setIsNoteModalVisible(false), setShowExitModal(true)]} />
       </Modal>
       {/* Incomplete Modal */}
       <Modal visible={showIncompleteModal} animationType="slide" transparent>
@@ -356,6 +370,19 @@ const styles = StyleSheet.create({
   },
   exitButtonText: {
     color: 'red',
+    fontSize: scale(20),
+    fontWeight: 'bold',
+  },
+  notesButton: {
+    backgroundColor: '#0000FF', 
+    height: scale(60),
+    width: scale(220),
+    borderRadius: 8, 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+  },
+  notesButtonText: {
+    color: 'white',
     fontSize: scale(20),
     fontWeight: 'bold',
   },
