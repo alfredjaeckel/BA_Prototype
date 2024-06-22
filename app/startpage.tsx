@@ -1,15 +1,19 @@
 // src/pages/StartPage.tsx
 import React from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useCompletionStatus, useThresholdStatus, useVisitedStatus, useOverrideStatus } from '@/contexts/CompletionContext'; 
+import { useNotes } from '@/contexts/NotesContext';
 import { scale } from '@/utils/scaling';
+
 
 const StartPage: React.FC = () => {
   const router = useRouter();
   const {completionStatus} = useCompletionStatus();
   const {thresholdStatus} = useThresholdStatus();
   const {overrideStatus} = useOverrideStatus();
+  const { notes, deleteNote } = useNotes();
+
 
   const handleStart = () => {
     if(completionStatus['result']){
@@ -57,6 +61,18 @@ const StartPage: React.FC = () => {
           style={styles.button}
         >
           {forecastStatus()}
+          <ScrollView style={styles.notesContainer}>
+          {notes.length > 0 ? (
+            notes.map((note, index) => (
+              <View key={index} style={styles.note}>
+                <Text>{note}</Text>
+                <Button title="Delete" onPress={() => deleteNote(index)} />
+              </View>
+            ))
+          ) : (
+            <Text>No notes available</Text>
+          )}
+        </ScrollView>
         </TouchableOpacity>
       </View>
     </View>
@@ -83,7 +99,6 @@ const styles = StyleSheet.create({
     borderRadius: scale(8),
     justifyContent: 'center',
     paddingHorizontal: scale(20),
-    height: scale(60),
   },
   title: {
     fontSize: scale(24),
@@ -91,6 +106,17 @@ const styles = StyleSheet.create({
   },
   bigText: {
     fontSize: scale(20),
+  },
+  notesContainer: {
+    marginTop: scale(20),
+  },
+  note: {
+    padding: scale(10),
+    borderBottomWidth: 1,
+    borderColor: '#ddd',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
 });
 
