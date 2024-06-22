@@ -16,6 +16,9 @@ const ResultPage: React.FC = () => {
   const [isNoteModalVisible, setIsNoteModalVisible] = React.useState(false);
   const { showPopup } = useLocalSearchParams();
   const [overrideHighRisk, setOverrideHighRisk] = useState(false);
+  const [resultContent, setResultContent] = useState('');
+  const [manualLowRisk, setManualLowRisk] = React.useState(false);
+  const [manualHighRisk, setManualHighRisk] = React.useState(false);
 
 
 const handleNext = () => {
@@ -73,111 +76,183 @@ useEffect(() => {
   setOverrideStatus('newValue', overrideHighRisk);
 }, [overrideHighRisk])
 
+useEffect(() => {
+  if(manualLowRisk){
+    setOverrideStatus('override', true);
+    setOverrideStatus('newValue', false);
+    router.push('startpage');
+  }
+}, [manualLowRisk]);
+
+useEffect(() => {
+  if(manualHighRisk){
+    setOverrideStatus('override', true);
+    setOverrideStatus('newValue', true);
+    router.push('startpage');
+  }
+}, [manualHighRisk]);
+
+
+useEffect(() => {
+  console.log('set result')
+  if (thresholdStatus['cci'] && completionStatus['cci']) {
+    setResultContent('cci');
+  } else if (thresholdStatus['ss'] && completionStatus['cci']&& completionStatus['ss']) {
+    setResultContent('ss');
+  } else if (thresholdStatus['asa'] && completionStatus['cci'] && completionStatus['ss'] && completionStatus['asa']) {
+    setResultContent('asa');
+  } else if (thresholdStatus['frailty'] && completionStatus['cci'] && completionStatus['ss'] && completionStatus['asa'] && completionStatus['frailty']) {
+    setResultContent('frailtyhigh');
+  } else if (!thresholdStatus['frailty'] && completionStatus['cci'] && completionStatus['ss'] && completionStatus['asa'] && completionStatus['frailty']){
+    setResultContent('frailtylow');
+  } else {
+    setResultContent('none')
+  }
+}, []);
+
 const handleOverride = () => {
   setOverrideHighRisk(!overrideHighRisk)
 };
 
 
-const getResultContent = () => {
-  if (thresholdStatus['cci']) {
-    return 'cci';
-  } else if (thresholdStatus['ss']) {
-    return 'ss';
-  } else if (thresholdStatus['asa']) {
-    return 'asa';
-  } else if (thresholdStatus['frailty']) {
-    return 'frailtyhigh';
-  } else {
-    return 'frailtylow';
-  }
-};
-
 const renderContentBasedOnThreshold = () => {
-  // Example logic: render different content if ASA PS is III or higher
-  if (thresholdStatus['cci']) {
-    return(
-    <View style={[styles.container, styles.riskContainer]}>
-      <View style={styles.flexRow}>
-        <Text style={styles.bigText}>The patient is at </Text>
-        <Text style={[styles.bigText, styles.veryBold]}>HIGH RISK</Text>
-        <Text style={styles.bigText}> of developing POD</Text>
-      </View>
-      <Text style={styles.bigText}>Patients with a CCI {'>'} 1 develop POD in 35% of cases</Text>
-      <Text style={styles.bigText}>Patient is in need of further screening</Text>
-    </View>
-    );
-  } 
-  else if (thresholdStatus['ss']) {
-    return(
-    <View style={[styles.container, styles.riskContainer]}>
-      <View style={styles.flexRow}>
-        <Text style={styles.bigText}>The patient is at </Text>
-        <Text style={[styles.bigText, styles.veryBold]}>LOW RISK</Text>
-        <Text style={styles.bigText}> of developing POD</Text>
-      </View>
-      <Text style={styles.bigText}>Patients with peripheral surgery develop POD in 10% of cases</Text>
-      <Text style={styles.bigText}>Patient is not in need of further screening</Text>
-    </View>
-    );
-  }
-  else if (thresholdStatus['asa']) {
-    return(
+  console.log('set render content')
+  console.log(resultContent)
+  switch(resultContent){
+    case 'cci':{
+      console.log('set render cci')
+      return(
       <View style={[styles.container, styles.riskContainer]}>
         <View style={styles.flexRow}>
           <Text style={styles.bigText}>The patient is at </Text>
           <Text style={[styles.bigText, styles.veryBold]}>HIGH RISK</Text>
           <Text style={styles.bigText}> of developing POD</Text>
         </View>
-        <Text style={styles.bigText}>Patients with ASA PS III / IV / V develop POD in 30% of cases</Text>
+        <Text style={styles.bigText}>Patients with a CCI {'>'} 1 develop POD in 35% of cases</Text>
         <Text style={styles.bigText}>Patient is in need of further screening</Text>
       </View>
       );
-  }
-  else if (thresholdStatus['frailty']) {
-    return(
-      <View style={[styles.container, styles.riskContainer]}>
-        <View style={styles.flexRow}>
-          <Text style={styles.bigText}>The patient is at </Text>
-          <Text style={[styles.bigText, styles.veryBold]}>HIGH RISK</Text>
-          <Text style={styles.bigText}> of developing POD</Text>
+    } 
+    case 'ss':{
+      console.log('set render ss')
+      return(
+        <View>
+          <View style={[styles.container, styles.riskContainer]}>
+            <View style={styles.flexRow}>
+              <Text style={styles.bigText}>The patient is at </Text>
+              <Text style={[styles.bigText, styles.veryBold]}>LOW RISK</Text>
+              <Text style={styles.bigText}> of developing POD</Text>
+            </View>
+            <Text style={styles.bigText}>Patients with peripheral surgery develop POD in 10% of cases</Text>
+            <Text style={styles.bigText}>Patient is not in need of further screening</Text>
+          </View>
+            <View style={styles.flexRow}>
+            <Checkbox
+              label=""
+              value={overrideStatus['override']}
+              onValueChange={handleOverride}
+            />
+            <Text style={styles.bigText}>The Patient is in need of further screening anyway</Text>
+          </View>
         </View>
-        <Text style={styles.bigText}>Patients with who are frail or pre-frail develop POD in 33% of cases</Text>
-        <Text style={styles.bigText}>Patient is in need of further screening</Text>
-      </View>
       );
-  }
-  else {
-    return(
-      <View style={[styles.container, styles.riskContainer]}>
-        <View style={styles.flexRow}>
-          <Text style={styles.bigText}>The patient is at </Text>
-          <Text style={[styles.bigText, styles.veryBold]}>LOW RISK</Text>
-          <Text style={styles.bigText}> of developing POD</Text>
+    }
+    case 'asa':{
+      console.log('set render asa')
+      return(
+        <View style={[styles.container, styles.riskContainer]}>
+          <View style={styles.flexRow}>
+            <Text style={styles.bigText}>The patient is at </Text>
+            <Text style={[styles.bigText, styles.veryBold]}>HIGH RISK</Text>
+            <Text style={styles.bigText}> of developing POD</Text>
+          </View>
+          <Text style={styles.bigText}>Patients with ASA PS III / IV / V develop POD in 30% of cases</Text>
+          <Text style={styles.bigText}>Patient is in need of further screening</Text>
         </View>
-        <Text style={styles.bigText}>Patients with who are stable according to the frailty assesment develop POD in 15% of cases</Text>
-        <Text style={styles.bigText}>Patient is not in need of further screening</Text>
-      </View>
       );
+    }
+    case 'frailtyhigh':{
+      console.log('set render frailty')
+      return(
+        <View style={[styles.container, styles.riskContainer]}>
+          <View style={styles.flexRow}>
+            <Text style={styles.bigText}>The patient is at </Text>
+            <Text style={[styles.bigText, styles.veryBold]}>HIGH RISK</Text>
+            <Text style={styles.bigText}> of developing POD</Text>
+          </View>
+          <Text style={styles.bigText}>Patients with who are frail or pre-frail develop POD in 33% of cases</Text>
+          <Text style={styles.bigText}>Patient is in need of further screening</Text>
+        </View>
+      );
+    }
+    case 'frailtylow':{
+      console.log('set render frailty low')
+      return(
+        <View style={styles.containerWithOverride}>
+          <View style={[styles.container, styles.riskContainer]}>
+            <View style={styles.flexRow}>
+              <Text style={styles.bigText}>The patient is at </Text>
+              <Text style={[styles.bigText, styles.veryBold]}>LOW RISK</Text>
+              <Text style={styles.bigText}> of developing POD</Text>
+            </View>
+            <Text style={styles.bigText}>Patients with who are stable according to the frailty assesment develop POD in 15% of cases</Text>
+            <Text style={styles.bigText}>Patient is not in need of further screening</Text>
+            </View>
+            <View style={styles.flexRow}>
+              <Checkbox
+                label=""
+                value={overrideStatus['override']}
+                onValueChange={handleOverride}
+              />
+              <Text style={styles.bigText}>The Patient is in need of further screening anyway</Text>
+            </View>
+          </View>
+      );
+    }
+    case 'none':{
+      console.log('set render none')
+      return(
+        <View style={[styles.container, styles.riskContainer]}>
+              <Text style={styles.modalText}>No Result has been determined, would you like to manually select the result?</Text>
+              <View style={styles.exitButtonContainer}>
+                <TouchableOpacity onPress={() => [setManualLowRisk(true)]} style={styles.modalButton}>
+                  <Text style={styles.modalButtonText}>Exit and set risk to low</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => [setManualHighRisk(true)]} style={styles.modalButton}>
+                  <Text style={styles.modalButtonText}>Exit and set risk to high</Text>
+                </TouchableOpacity>
+          </View>
+        </View>
+      );
+    }
+    default:{
+      console.log('set render default')
+      return(
+        <View style={[styles.container, styles.riskContainer]}>
+              <Text style={styles.modalText}>No Result has been determined, would you like to manually select the result?</Text>
+              <View style={styles.exitButtonContainer}>
+                <TouchableOpacity onPress={() => [setManualLowRisk(true)]} style={styles.modalButton}>
+                  <Text style={styles.modalButtonText}>Exit and set risk to low</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => [setManualHighRisk(true)]} style={styles.modalButton}>
+                  <Text style={styles.modalButtonText}>Exit and set risk to high</Text>
+                </TouchableOpacity>
+          </View>
+        </View>
+      );
+    }
   }
 };
 
   return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.bigText}>{contents.find(item => item.index === getResultContent())?.header}</Text>
-          <Text style={styles.litteText}>{contents.find(item => item.index === getResultContent())?.subHeader}</Text>
+          <Text style={styles.bigText}>{contents.find(item => item.index === resultContent)?.header}</Text>
+          <Text style={styles.litteText}>{contents.find(item => item.index === resultContent)?.subHeader}</Text>
         </View>
         <ScrollView style={styles.container}>
           {renderContentBasedOnThreshold()}
         </ScrollView>
-        <View style={styles.flexRow}>
-          <Checkbox
-            label=""
-            value={overrideStatus['override']}
-            onValueChange={handleOverride}
-          />
-          <Text style={styles.bigText}>The Patient is in need of further screening anyway</Text>
-        </View>
         <TouchableOpacity onPress={() => setIsNoteModalVisible(true)} style={styles.notesButton}>
           <Text style={styles.notesButtonText}>Take Notes</Text>
         </TouchableOpacity>
@@ -228,6 +303,9 @@ const renderContentBasedOnThreshold = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  containerWithOverride: {
+    justifyContent: 'space-between',
   },
   header: {
     flexDirection: 'row',
@@ -331,6 +409,20 @@ const styles = StyleSheet.create({
   riskContainer:{
     justifyContent: 'space-evenly',
     alignItems: 'center',
+  },
+  modalButton: {
+    backgroundColor: 'blue',
+    paddingVertical: scale(10),
+    paddingHorizontal: scale(20),
+    borderRadius: scale(5),
+    marginVertical: scale(5),
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: scale(16),
+  },
+  exitButtonContainer: {
+    padding: scale(20),
   },
 });
 
