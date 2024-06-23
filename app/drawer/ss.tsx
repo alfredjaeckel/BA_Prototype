@@ -49,7 +49,7 @@ const SSPage: React.FC = () => {
         <Text style={styles.bigText}>Please select the patient's surgery site</Text>
         <Text style={styles.litteText}>Low risk of developing POD if surgery site is peripheral</Text>
       </View>
-      <ScrollView style={styles.container}>
+      <ScrollView style={styles.checkboxContainer}>
         <ExclusiveRadioButtons
           option1Label="Non-peripheral"
           option1Subtext="intracranial, intrathoracic, intra-abdominal or pelvic"
@@ -83,6 +83,10 @@ const SSPage: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  checkboxContainer: {
+    paddingHorizontal: scale(25),
+    paddingVertical: scale(5),
   },
   header: {
     flexDirection: 'row',

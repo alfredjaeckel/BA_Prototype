@@ -12,12 +12,12 @@ interface RadioButtonProps {
 
 const RadioButton: React.FC<RadioButtonProps> = ({ label, subtext, selected, onPress }) => {
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
-      <View style={styles.radioContainer}>
+    <TouchableOpacity onPress={onPress}>
+      <View style={[styles.radioContainer, selected && styles.highlightContainer]}>
         <MaterialIcons
           name={selected ? "radio-button-checked" : "radio-button-unchecked"}
-          size={24}
-          color={selected ? "#007AFF" : "#8E8E93"}
+          size={28}
+          color={selected ? "#0000FF" : "#8E8E93"}
         />
         <View style={styles.textContainer}>
           <Text style={styles.label}>{label}</Text>
@@ -29,12 +29,19 @@ const RadioButton: React.FC<RadioButtonProps> = ({ label, subtext, selected, onP
 };
 
 const styles = StyleSheet.create({
-  container: {
-    marginVertical: 10,
-  },
   radioContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: scale(25),
+    paddingVertical: scale(10),
+    paddingHorizontal: scale(25),
+    margin: scale(5),
+    borderWidth: 2,
+    borderRadius: 8,
+    borderColor: 'transparent',
+  },
+  highlightContainer: {
+    borderColor: '#0000FF',
   },
   textContainer: {
     flex: 1,

@@ -21,7 +21,7 @@ const ExclusiveRadioButtons: React.FC<ExclusiveRadioButtonsProps> = ({
 }) => {
 
   return (
-    <View style={styles.container}>
+    <View>
       <RadioButton
         label={option1Label}
         subtext={option1Subtext}

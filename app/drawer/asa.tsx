@@ -50,7 +50,7 @@ const ASAPage: React.FC = () => {
         <Text style={styles.bigText}>Please select the patient's ASA PS</Text>
         <Text style={styles.litteText}>High risk of developing POD if ASA PS III or higher</Text>
       </View>
-      <ScrollView style={styles.container}>
+      <ScrollView style={styles.checkboxContainer}>
         <ExclusiveRadioButtons
           option1Label="ASA I / II"
           option1Subtext="a patient with at most mild systemic disease"
@@ -84,6 +84,10 @@ const ASAPage: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  checkboxContainer: {
+    paddingHorizontal: scale(25),
+    paddingVertical: scale(5),
   },
   header: {
     flexDirection: 'row',

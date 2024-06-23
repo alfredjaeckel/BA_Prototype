@@ -46,7 +46,7 @@ const FrailtyPage: React.FC = () => {
         <Text style={styles.bigText}>Please select the patients frailty status</Text>
         <Text style={[styles.litteText, styles.rightText]}>{"Low risk of developing POD if stable \n High risk of developing POD if pre-frail or frail"}</Text>
       </View>
-      <ScrollView style={styles.container}>
+      <ScrollView style={styles.checkboxContainer}>
         <ExclusiveRadioButtons
           option1Label="Stable"
           option1Subtext="patient exhibits non of the frailty criteria"
@@ -164,6 +164,10 @@ const FrailtyPage: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  checkboxContainer: {
+    paddingHorizontal: scale(25),
+    paddingVertical: scale(5),
   },
   header: {
     flexDirection: 'row',
