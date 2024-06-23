@@ -148,7 +148,6 @@ const renderContentBasedOnThreshold = () => {
           </View>
             <View style={styles.flexRow}>
             <Checkbox
-              label=""
               value={overrideStatus['override']}
               onValueChange={handleOverride}
             />
@@ -200,7 +199,6 @@ const renderContentBasedOnThreshold = () => {
             </View>
             <View style={styles.flexRow}>
               <Checkbox
-                label=""
                 value={overrideStatus['override']}
                 onValueChange={handleOverride}
               />
@@ -267,7 +265,7 @@ const renderContentBasedOnThreshold = () => {
             onPress={handleNext}
             style={styles.nextButton}
           >
-            <Text style={styles.nextButtonText}>Next</Text>
+            <Text style={styles.nextButtonText}>Finish</Text>
           </TouchableOpacity>
         </View>
         <Modal

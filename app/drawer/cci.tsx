@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal, Button, TouchableWithoutFeedback } from 'react-native';
 import { useRouter } from 'expo-router';
-import Checkbox from '../../components/checkbox'; 
+import CciCheckbox from '../../components/CciCheckbox'; 
 import Selector from '../../components/selector'; 
 import { conditionState, setConditionWeight, setConditionValue, sumConditionValues } from '../../constants/ccidata';
 import { scale } from '../../utils/scaling';
@@ -82,66 +82,42 @@ const CciPage: React.FC = () => {
         <Text style={styles.bigText}>Please select the patients conditions</Text>
         <Text style={styles.litteText}>High risk of developing POD if CCI {'>'} 1</Text>
       </View>
-      <ScrollView style={styles.container}>
-        {conditions.map((condition) => (
-          <View key={condition.index} style={styles.checkboxContainer}>
-            <View style={styles.checkboxStart}>
-              <Checkbox
-                label=""
-                value={condition.value}
-                onValueChange={(newValue) => handleCheckboxChange(condition.index, newValue)}
-              />
-              <Text style={styles.bigText}>{condition.name}</Text>
-              {condition.name === 'Liver disease' && (
-                <Selector
+      <ScrollView>
+        <View style={styles.checkboxContainer}>
+          {conditions.map((condition) => (
+            <View key={condition.index}>
+                <CciCheckbox
+                  name={condition.name}
+                  index={condition.index}
                   weight={condition.weight}
-                  highWeight={3}
-                  minLable='Mild'
-                  maxLabel='Moderate to Severe'
-                  onWeightChange={(newWeight) => handleSelectorChange(condition.index, newWeight)}
+                  handleQuestionMarkClick={handleQuestionMarkClick}
+                  handleSelectorChange={handleSelectorChange}
+                  showInfo={condition.showInfo}
+                  info={condition.info}
+                  value={condition.value}
+                  onValueChange={(newValue) => handleCheckboxChange(condition.index, newValue)}
                 />
-              )}
-              {condition.name === 'Diabetes mellitus' && (
-                <Selector
-                  weight={condition.weight}
-                  highWeight={2}
-                  minLable='Uncomplicated'
-                  maxLabel='End organ damage'
-                  onWeightChange={(newWeight) => handleSelectorChange(condition.index, newWeight)}
-                />
-              )}
             </View>
-            <View style={styles.checkboxEnd}>
-              <Text> +{condition.weight}</Text>
-              {condition.showInfo && (
-                <TouchableOpacity 
-                  onPress={() => handleQuestionMarkClick(condition.name, condition.info)}
-                  style={styles.questionMark}
-                >
-                  <Text>?</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          </View>
-        ))}
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={isPopupVisible}
-        >
-          <TouchableWithoutFeedback onPress={() => setIsPopupVisible(false)}>
-            <View style={styles.modalOverlay}>
-              <TouchableWithoutFeedback>
-                <View style={styles.modalView}>
-                  <Text style={styles.modalTitle}>{popupContent.name}</Text>
-                  <Text style={styles.modalText}>{popupContent.info}</Text>
-                  <Button title="Close" onPress={() => setIsPopupVisible(false)} />
-                </View>
-              </TouchableWithoutFeedback>
-            </View>
-          </TouchableWithoutFeedback>
-        </Modal>
-        <Text style={styles.sumText}>Total Weight: {sumConditionValues()}</Text>
+          ))}
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={isPopupVisible}
+          >
+            <TouchableWithoutFeedback onPress={() => setIsPopupVisible(false)}>
+              <View style={styles.modalOverlay}>
+                <TouchableWithoutFeedback>
+                  <View style={styles.modalView}>
+                    <Text style={styles.modalTitle}>{popupContent.name}</Text>
+                    <Text style={styles.modalText}>{popupContent.info}</Text>
+                    <Button title="Close" onPress={() => setIsPopupVisible(false)} />
+                  </View>
+                </TouchableWithoutFeedback>
+              </View>
+            </TouchableWithoutFeedback>
+          </Modal>
+          {/*<Text style={styles.sumText}>Total Weight: {sumConditionValues()}</Text>*/}
+        </View>
       </ScrollView>
       <View style={styles.footer}>
         <TouchableOpacity 
@@ -183,21 +159,8 @@ const styles = StyleSheet.create({
     fontSize: scale(16),
   },
   checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: scale(10),
     paddingHorizontal: scale(25),
-    margin: scale(5),
-  },
-  checkboxStart: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  checkboxEnd: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: scale(100),
+    paddingVertical: scale(5),
   },
   sumText: {
     fontSize: 18,
@@ -233,15 +196,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  questionMark: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    justifyContent: 'center', 
-    alignItems: 'center',
-    borderColor: 'black',
-    borderWidth: 1,
   },
   nextButton: {
     backgroundColor: '#0000FF',
