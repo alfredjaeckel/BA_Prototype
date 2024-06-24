@@ -1,6 +1,6 @@
 import { scale } from '@/utils/scaling';
 import React from 'react';
-import { View, Text, Button, StyleSheet, Modal, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, Button, StyleSheet, Modal, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 
 interface CutoffValuesModalProps {
   isCutoffValuesModalVisible: boolean;
@@ -10,7 +10,7 @@ interface CutoffValuesModalProps {
 const CutoffValuesModal: React.FC<CutoffValuesModalProps> = ({ isCutoffValuesModalVisible, onClose }) => {
   return (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent={true}
       visible={isCutoffValuesModalVisible}
     >
@@ -18,8 +18,13 @@ const CutoffValuesModal: React.FC<CutoffValuesModalProps> = ({ isCutoffValuesMod
         <View style={styles.modalOverlay}>
           <TouchableWithoutFeedback>
             <View style={styles.modalView}>
-              <Text style={styles.bigText}>Handgrip Strength Cutoffs:</Text>
-              <View style={styles.flexRow}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.bigText}>Handgrip Strength Cutoffs:</Text>
+                <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                  <Text style={styles.closeButtonText}>X</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.tableContainer}>
                 <View>
                   <Text style={styles.litteText}>Male:</Text>
                   <View style={styles.flexRow}>
@@ -56,7 +61,6 @@ const CutoffValuesModal: React.FC<CutoffValuesModalProps> = ({ isCutoffValuesMod
                 </View>
               </View>
               <Text style={styles.litteText}>Average three trials from the dominating hand</Text>
-              <Button title="Close" onPress={onClose} />
             </View>
           </TouchableWithoutFeedback>
         </View>
@@ -68,25 +72,35 @@ const CutoffValuesModal: React.FC<CutoffValuesModalProps> = ({ isCutoffValuesMod
 
 const styles = StyleSheet.create({
   modalView: {
-    margin: 20,
     backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
+    borderRadius: scale(8),
+    padding: scale(15),
+    paddingHorizontal: scale(25),
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5
+    elevation: 5,
+    gap: scale(10),
+    width: scale(400),
   },
   modalOverlay: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+    paddingVertical: scale(200),
+    paddingHorizontal: scale(50),
+  },
+  modalHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  tableContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
   },
   litteText: {
     fontSize: scale(16),
@@ -97,8 +111,17 @@ const styles = StyleSheet.create({
   flexRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
+    gap: scale(10),
   },
   bigText: {
+    fontSize: scale(20),
+    fontWeight: 'bold',
+  },
+  closeButton: {
+    alignItems: 'center', 
+    justifyContent: 'center', 
+  },
+  closeButtonText: {
     fontSize: scale(20),
     fontWeight: 'bold',
   },

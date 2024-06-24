@@ -1,6 +1,7 @@
 import { scale } from '@/utils/scaling';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
-import { View, Text, Button, StyleSheet, Modal, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, Button, StyleSheet, Modal, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 
 interface AutoNavigationModalProps {
   isAutoNavigationModalVisible: boolean;
@@ -11,7 +12,7 @@ interface AutoNavigationModalProps {
 const AutoNavigationModal: React.FC<AutoNavigationModalProps> = ({ isAutoNavigationModalVisible, onClose, onUndo }) => {
   return (
     <Modal
-          animationType="slide"
+          animationType="fade"
           transparent={true}
           visible={isAutoNavigationModalVisible}
         >
@@ -19,10 +20,17 @@ const AutoNavigationModal: React.FC<AutoNavigationModalProps> = ({ isAutoNavigat
             <View style={styles.modalOverlay}>
               <TouchableWithoutFeedback>
                 <View style={styles.modalView}>
+                  <View style={styles.modalHeader}>
                   <Text style={styles.modalTitle}>Threshold met!</Text>
+                    <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                      <Text style={styles.closeButtonText}>X</Text>
+                    </TouchableOpacity>
+                  </View>
                   <Text style={styles.modalText}>Navigated here automatically.</Text>
-                  <Button title="Close" onPress={onClose} />
-                  <Button title="Undo" onPress={onUndo} />
+                  <TouchableOpacity onPress={onUndo} style={styles.undoButton}>
+                    <Text style={styles.undoButtonText}>Undo</Text>
+                    <MaterialCommunityIcons name="undo-variant" size={24} color="red" />
+                  </TouchableOpacity>
                 </View>
               </TouchableWithoutFeedback>
             </View>
@@ -33,35 +41,59 @@ const AutoNavigationModal: React.FC<AutoNavigationModalProps> = ({ isAutoNavigat
 
 
 const styles = StyleSheet.create({
-  modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center"
-  },
   modalOverlay: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+    paddingVertical: scale(100),
+    paddingHorizontal: scale(310),
+  },
+  modalView: {
+    backgroundColor: "white",
+    borderRadius: scale(8),
+    padding: scale(15),
+    paddingHorizontal: scale(25),
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    gap: scale(15),
+    width: scale(280),
+  },
+  modalHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  modalTitle: {
+    fontSize: scale(20),
+    fontWeight: 'bold',
+  },
+  modalText: {
+    textAlign: "center",
+    fontSize: scale(16),
+    width: '100%',
+  },
+  closeButton: {
+    alignItems: 'center', 
+    justifyContent: 'center', 
+  },
+  closeButtonText: {
+    fontSize: scale(20),
+    fontWeight: 'bold',
+  },
+  undoButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: scale(5),
+  },
+  undoButtonText: {
+    color: '#FF0000',
+    fontSize: scale(20),
+    fontWeight: 'bold',
   },
 });
 

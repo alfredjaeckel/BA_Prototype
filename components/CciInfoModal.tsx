@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet, Modal, TouchableWithoutFeedback } from 'react-native';
+import { scale } from '@/utils/scaling';
+import React from 'react';
+import { View, Text, StyleSheet, Modal, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 
 interface CciInfoModalProps {
   isCciInfoModalVisible: boolean;
@@ -12,7 +13,7 @@ const CciInfoModal: React.FC<CciInfoModalProps> = ({ isCciInfoModalVisible, name
   return (
     <Modal
     visible={isCciInfoModalVisible}
-    animationType="slide"
+    animationType="fade"
     transparent
     onRequestClose={onClose}
     >
@@ -20,9 +21,13 @@ const CciInfoModal: React.FC<CciInfoModalProps> = ({ isCciInfoModalVisible, name
         <View style={styles.modalOverlay}>
           <TouchableWithoutFeedback>
             <View style={styles.modalView}>
-              <Text style={styles.modalTitle}>{name}</Text>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>{name}</Text>
+                <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                  <Text style={styles.closeButtonText}>X</Text>
+                </TouchableOpacity>
+              </View>
               <Text style={styles.modalText}>{info}</Text>
-              <Button title="Close" onPress={onClose} />
             </View>
           </TouchableWithoutFeedback>
         </View>
@@ -33,35 +38,49 @@ const CciInfoModal: React.FC<CciInfoModalProps> = ({ isCciInfoModalVisible, name
 
 
 const styles = StyleSheet.create({
-  modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center"
-  },
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: scale(40),
+  },
+  modalView: {
+    backgroundColor: "white",
+    borderRadius: scale(8),
+    padding: scale(15),
+    paddingHorizontal: scale(25),
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    gap: scale(10),
+    width: scale(400),
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  modalTitle: {
+    fontSize: scale(20),
+    fontWeight: 'bold',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "left",
+    fontSize: scale(16),
+    width: '100%',
+  },
+  closeButton: {
+    alignItems: 'center', 
+    justifyContent: 'center', 
+  },
+  closeButtonText: {
+    fontSize: scale(20),
+    fontWeight: 'bold',
   },
 });
 

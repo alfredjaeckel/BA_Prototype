@@ -42,7 +42,7 @@ const handleUndo = () => {
 useEffect(() => {
   if (showPopup === 'true') {
     setIsAutoNavigationModalVisible(true);
-    const timer = setTimeout(() => setIsAutoNavigationModalVisible(false), 5000); // 5 seconds
+    const timer = setTimeout(() => setIsAutoNavigationModalVisible(false), 8000); // 5 seconds
     return () => clearTimeout(timer);
   }
 }, [showPopup]);

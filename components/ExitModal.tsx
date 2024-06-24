@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import NoteTakingModal from './NoteTakingModal';
 import { scale } from '@/utils/scaling';
+import { AntDesign } from '@expo/vector-icons';
 
 interface ExitModalProps {
   isExitModalVisible: boolean;
@@ -15,28 +16,33 @@ const ExitModal: React.FC<ExitModalProps> = ({ isExitModalVisible, onClose, setE
   const [isNoteModalVisible, setIsNoteModalVisible] = React.useState(false);
 
   return (
-    <Modal visible={isExitModalVisible} animationType="slide" transparent>
+    <Modal visible={isExitModalVisible} animationType="fade" transparent>
         <TouchableWithoutFeedback onPress={onClose}>
           <View style={styles.modalBackground}>
             <View style={styles.modalContent}>
-              <Text style={styles.modalText}>Are you shure you want to exit?</Text>
-              <View style={styles.exitButtonContainer}>
-                <TouchableOpacity onPress={setExitLowRisk} style={styles.modalButton}>
-                  <Text style={styles.modalButtonText}>Exit and set risk to low</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={setExitHighRisk} style={styles.modalButton}>
-                  <Text style={styles.modalButtonText}>Exit and set risk to high</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={setExitUnknownRisk} style={styles.modalButton}>
-                  <Text style={styles.modalButtonText}>Exit</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={onClose} style={styles.modalButton}>
-                  <Text style={styles.modalButtonText}>Cancel</Text>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalText}>Are you shure you want to exit?</Text>
+                <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                  <Text style={styles.closeButtonText}>X</Text>
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity onPress={() => [setIsNoteModalVisible(true), console.log('press')]} style={styles.notesButton}>
-                <Text style={styles.notesButtonText}>Take Notes</Text>
-              </TouchableOpacity>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity onPress={() => setIsNoteModalVisible(true)} style={styles.notesButton}>
+                  <Text style={styles.notesButtonText}>Take Notes</Text>
+                  <AntDesign name="form" size={24} color="black" />
+                </TouchableOpacity>
+                <View style={styles.exitButtonContainer}>
+                  <TouchableOpacity onPress={setExitLowRisk} style={styles.modalButton}>
+                    <Text style={styles.modalButtonText}>Set risk to low and exit</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={setExitHighRisk} style={styles.modalButton}>
+                    <Text style={styles.modalButtonText}>Set risk to high and exit</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={setExitUnknownRisk} style={styles.modalButton}>
+                    <Text style={styles.modalButtonText}>Exit</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
               <NoteTakingModal
                 onClose={() => setIsNoteModalVisible(false)}
                 isNoteModalVisible={isNoteModalVisible}
@@ -65,38 +71,65 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: scale(20),
     borderRadius: scale(10),
-    width: '80%',
     alignItems: 'center',
+    justifyContent: 'center',
+    width: '45%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
   },
   modalText: {
-    fontSize: scale(18),
-    marginBottom: scale(20),
-    textAlign: 'center',
+    fontSize: scale(20),
+    fontWeight: 'bold',
   },
   modalButton: {
-    backgroundColor: 'blue',
+    backgroundColor: '#FFCCCC',
     paddingVertical: scale(10),
     paddingHorizontal: scale(20),
     borderRadius: scale(5),
     marginVertical: scale(5),
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: scale(50),
   },
   modalButtonText: {
-    color: 'white',
-    fontSize: scale(16),
+    color: '#FF0000',
+    fontSize: scale(20),
+    fontWeight: 'bold',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: scale(20),
+    paddingVertical: scale(20),
+    marginHorizontal: scale(20),
   },
   exitButtonContainer: {
-    padding: scale(20),
   },
   notesButton: {
-    backgroundColor: '#0000FF', 
-    height: scale(60),
+    height: scale(50),
     width: scale(220),
-    borderRadius: 8, 
+    borderRadius: scale(8), 
+    borderWidth: scale(2),
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    flexDirection: 'row',
+    gap: scale(10),
+    marginVertical: scale(5),
+  },
+  notesButtonText: {
+    fontSize: scale(20),
+    fontWeight: 'bold',
+  },
+  closeButton: {
     alignItems: 'center', 
     justifyContent: 'center', 
   },
-  notesButtonText: {
-    color: 'white',
+  closeButtonText: {
     fontSize: scale(20),
     fontWeight: 'bold',
   },
