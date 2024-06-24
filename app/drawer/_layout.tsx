@@ -140,10 +140,16 @@ const Sidebar: React.FC = () => {
                   styles.circle,
                   link.index === getFirstIncompletePage() && !thresholdStatus[prevLinkIndex(link.index)] && styles.newCircle,
                   completionStatus[link.index] && styles.completedCircle,
+                  isCurrentPage(link.href.substring(1)) && styles.newCircle,
+
                 ]}
               />
               {idx < links.length - 1 && (
-                <View style={[styles.line, completionStatus[link.index] && !thresholdStatus[link.index]&& styles.completedLine]} />
+                <View 
+                style={[
+                  styles.line, 
+                  completionStatus[link.index] && !thresholdStatus[link.index]&& styles.completedLine,
+                ]} />
               )}
             </View>
           ))}
@@ -239,13 +245,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   sidebar: {
-    width: scaleWidth(300),
+    width: scaleWidth(270),
     backgroundColor: '#f0f0f0',
     padding: scale(20),
     paddingTop: scale(25),
     paddingBottom: scale(15),
     borderRightWidth: 1,
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   title: {
     fontSize: scale(24),
@@ -271,18 +278,18 @@ const styles = StyleSheet.create({
   },
   newCircle: {
     borderColor: 'blue',
-    borderWidth: 2
+    borderWidth: scale(3),
   },
   completedCircle: {
     backgroundColor: 'blue'
   },
   line: {
-    width: 2,
+    borderWidth: scale(3),
     flex: 1,
-    backgroundColor: '#ccc'
+    borderColor: '#ccc'
   },
   completedLine: {
-    backgroundColor: 'blue'
+    borderColor: 'blue'
   },
   links: {
     justifyContent: 'flex-start'

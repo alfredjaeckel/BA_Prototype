@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },  
   sidebar: {
-    width: scale(300),
+    width: scale(270),
     backgroundColor: '#f0f0f0',
     padding: 10,
     borderRightWidth: 1
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     padding: scale(25),
   },
   startContainer: {
-    paddingVertical: scale(10),
+    paddingVertical: scale(15),
     paddingHorizontal: scale(25),
     margin: scale(5),
     gap: scale(10),
