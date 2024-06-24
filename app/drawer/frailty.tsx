@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { scale, scaleHeight } from '@/utils/scaling';
+import { scale } from '@/utils/scaling';
 import { useCompletionStatus, useThresholdStatus, useVisitedStatus } from '@/contexts/CompletionContext'; 
 import ExclusiveRadioButtons from '@/components/ExclusiveRadioButtons';
 import CutoffValuesModal from '@/components/CutoffValuesModal';
@@ -47,9 +47,9 @@ const FrailtyPage: React.FC = () => {
     <View style={styles.container}>
       <Header
         mainText="Please select the patient's frailty status"
-        subText="Low risk of developing POD if stable, High risk of developing POD if pre-frail or frail"
+        subText={"Low risk of developing POD if stable\n High risk of developing POD if pre-frail or frail"}
       />
-      <ScrollView style={styles.checkboxContainer}>
+      <View style={styles.checkboxContainer}>
         <ExclusiveRadioButtons
           option1Label="Stable"
           option1Subtext="patient exhibits non of the frailty criteria"
@@ -61,7 +61,7 @@ const FrailtyPage: React.FC = () => {
             setHasInteracted(true);
           }}
         />
-        <View>
+        <View style={styles.criterionContainer}>
           <View style={styles.frailtyCriterion}>
             <Text style={styles.litteBoldText}>Fried Frailty Criteria</Text>
           </View>
@@ -86,8 +86,9 @@ const FrailtyPage: React.FC = () => {
             <View style={styles.flexRow}> 
               <Text style={[styles.litteText, styles.rightText]}>Hand Grip Strength</Text>
               <Text>    </Text>
-              <TouchableOpacity onPress={() => setIsCutoffVisible(true)}>
-                <Text style={styles.litteText}>Show Cutoffs</Text>
+              <TouchableOpacity onPress={() => setIsCutoffVisible(true)} style={styles.cutoffButton}>
+                <Text style={styles.litteText}>Cutoff Values</Text>
+                <Text style={styles.questionMark} >?</Text>
               </TouchableOpacity>
             </View>
             <CutoffValuesModal
@@ -96,7 +97,7 @@ const FrailtyPage: React.FC = () => {
             />
           </View>
         </View>
-      </ScrollView>
+      </View>
       <Footer
         handleBack={handleBack}
         handleNext={handleNext}
@@ -112,13 +113,18 @@ const styles = StyleSheet.create({
   checkboxContainer: {
     paddingHorizontal: scale(25),
     paddingVertical: scale(5),
+    flex: 1,
+  },
+  criterionContainer: {
+    paddingTop: scale(50),
+    gap: scale(10),
   },
   frailtyCriterion: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: scale(10),
     paddingHorizontal: scale(25),
+    height: scale(30),
   },
   bigText: {
     fontSize: scale(20),
@@ -137,6 +143,27 @@ const styles = StyleSheet.create({
   flexRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  cutoffButton: {
+    borderWidth: scale(2),
+    borderRadius: scale(8),
+    padding: scale(2),
+    paddingHorizontal: scale(5),
+    flexDirection: 'row',
+    gap: scale(5),
+    alignItems: 'center',
+  },
+  questionMark: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    borderColor: 'black',
+    borderWidth: 2,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    fontSize: scale(16),
+    fontWeight: 'bold',
   },
 });
 
