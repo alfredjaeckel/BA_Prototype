@@ -8,6 +8,7 @@ import Checkbox from '@/components/checkbox';
 import AutoNavigationModal from '@/components/AutoNavigtionModal';
 import Footer from '@/components/footer';
 import Header from '@/components/header';
+import { AntDesign } from '@expo/vector-icons';
 
 const ResultPage: React.FC = () => {
   const router = useRouter();
@@ -84,24 +85,17 @@ useEffect(() => {
 }, [overrideHighRisk])
 
 useEffect(() => {
-  if(manualLowRisk){
-    setOverrideStatus('override', true);
-    setOverrideStatus('newValue', false);
-    router.push('startpage');
-  }
+  setOverrideStatus('override', manualLowRisk);
+  setOverrideStatus('newValue', !manualLowRisk);
 }, [manualLowRisk]);
 
 useEffect(() => {
-  if(manualHighRisk){
-    setOverrideStatus('override', true);
-    setOverrideStatus('newValue', true);
-    router.push('startpage');
-  }
+  setOverrideStatus('override', manualHighRisk);
+  setOverrideStatus('newValue', manualHighRisk);
 }, [manualHighRisk]);
 
 
 useEffect(() => {
-  console.log('set result')
   if (thresholdStatus['cci'] && completionStatus['cci']) {
     setResultContent('cci');
   } else if (thresholdStatus['ss'] && completionStatus['cci']&& completionStatus['ss']) {
@@ -123,11 +117,8 @@ const handleOverride = () => {
 
 
 const renderContentBasedOnThreshold = () => {
-  console.log('set render content')
-  console.log(resultContent)
   switch(resultContent){
     case 'cci':{
-      console.log('set render cci')
       return(
       <View style={[styles.container, styles.riskContainer]}>
         <View style={styles.flexRow}>
@@ -141,30 +132,19 @@ const renderContentBasedOnThreshold = () => {
       );
     } 
     case 'ss':{
-      console.log('set render ss')
       return(
-        <View>
-          <View style={[styles.container, styles.riskContainer]}>
-            <View style={styles.flexRow}>
-              <Text style={styles.bigText}>The patient is at </Text>
-              <Text style={[styles.bigText, styles.veryBold]}>LOW RISK</Text>
-              <Text style={styles.bigText}> of developing POD</Text>
-            </View>
-            <Text style={styles.bigText}>Patients with peripheral surgery develop POD in 10% of cases</Text>
-            <Text style={styles.bigText}>Patient is not in need of further screening</Text>
+        <View style={[styles.container, styles.riskContainer]}>
+          <View style={styles.flexRow}>
+            <Text style={styles.bigText}>The patient is at </Text>
+            <Text style={[styles.bigText, styles.veryBold]}>LOW RISK</Text>
+            <Text style={styles.bigText}> of developing POD</Text>
           </View>
-            <View style={styles.flexRow}>
-            <Checkbox
-              value={overrideStatus['override']}
-              onValueChange={handleOverride}
-            />
-            <Text style={styles.bigText}>The Patient is in need of further screening anyway</Text>
-          </View>
+          <Text style={styles.bigText}>Patients with peripheral surgery develop POD in 10% of cases</Text>
+          <Text style={styles.bigText}>Patient is not in need of further screening</Text>
         </View>
       );
     }
     case 'asa':{
-      console.log('set render asa')
       return(
         <View style={[styles.container, styles.riskContainer]}>
           <View style={styles.flexRow}>
@@ -178,7 +158,6 @@ const renderContentBasedOnThreshold = () => {
       );
     }
     case 'frailtyhigh':{
-      console.log('set render frailty')
       return(
         <View style={[styles.container, styles.riskContainer]}>
           <View style={styles.flexRow}>
@@ -192,57 +171,43 @@ const renderContentBasedOnThreshold = () => {
       );
     }
     case 'frailtylow':{
-      console.log('set render frailty low')
       return(
-        <View style={styles.containerWithOverride}>
-          <View style={[styles.container, styles.riskContainer]}>
-            <View style={styles.flexRow}>
-              <Text style={styles.bigText}>The patient is at </Text>
-              <Text style={[styles.bigText, styles.veryBold]}>LOW RISK</Text>
-              <Text style={styles.bigText}> of developing POD</Text>
-            </View>
-            <Text style={styles.bigText}>Patients with who are stable according to the frailty assesment develop POD in 15% of cases</Text>
-            <Text style={styles.bigText}>Patient is not in need of further screening</Text>
-            </View>
-            <View style={styles.flexRow}>
-              <Checkbox
-                value={overrideStatus['override']}
-                onValueChange={handleOverride}
-              />
-              <Text style={styles.bigText}>The Patient is in need of further screening anyway</Text>
-            </View>
+        <View style={[styles.container, styles.riskContainer]}>
+          <View style={styles.flexRow}>
+            <Text style={styles.bigText}>The patient is at </Text>
+            <Text style={[styles.bigText, styles.veryBold]}>LOW RISK</Text>
+            <Text style={styles.bigText}> of developing POD</Text>
+          </View>
+          <Text style={styles.bigText}>Patients with who are stable according to the frailty assesment develop POD in 15% of cases</Text>
+          <Text style={styles.bigText}>Patient is not in need of further screening</Text>
           </View>
       );
     }
     case 'none':{
-      console.log('set render none')
       return(
         <View style={[styles.container, styles.riskContainer]}>
-              <Text style={styles.modalText}>No Result has been determined, would you like to manually select the result?</Text>
-              <View style={styles.exitButtonContainer}>
-                <TouchableOpacity onPress={() => [setManualLowRisk(true)]} style={styles.modalButton}>
-                  <Text style={styles.modalButtonText}>Exit and set risk to low</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => [setManualHighRisk(true)]} style={styles.modalButton}>
-                  <Text style={styles.modalButtonText}>Exit and set risk to high</Text>
-                </TouchableOpacity>
+          <Text style={styles.bigText}>More information is needed to determine a result.{'\n'}</Text>
+            <View style={[styles.overrideContainer, manualLowRisk && styles.selectedContainer]}>
+                <Checkbox
+                  value={manualLowRisk}
+                  onValueChange={() => [setManualLowRisk(!manualLowRisk), manualHighRisk && setManualHighRisk(false)]}
+                />
+                <Text style={styles.bigText}>Manually set risk to low</Text>
+            </View>
+            <View style={[styles.overrideContainer, manualHighRisk && styles.selectedContainer]}>
+                <Checkbox
+                  value={manualHighRisk}
+                  onValueChange={() => [setManualHighRisk(!manualHighRisk), manualLowRisk && setManualLowRisk(false)]}
+                />
+                <Text style={styles.bigText}>Manually set risk to high</Text>
           </View>
         </View>
       );
     }
     default:{
-      console.log('set render default')
       return(
         <View style={[styles.container, styles.riskContainer]}>
-              <Text style={styles.modalText}>No Result has been determined, would you like to manually select the result?</Text>
-              <View style={styles.exitButtonContainer}>
-                <TouchableOpacity onPress={() => [setManualLowRisk(true)]} style={styles.modalButton}>
-                  <Text style={styles.modalButtonText}>Exit and set risk to low</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => [setManualHighRisk(true)]} style={styles.modalButton}>
-                  <Text style={styles.modalButtonText}>Exit and set risk to high</Text>
-                </TouchableOpacity>
-          </View>
+              <Text style={styles.modalText}>Error</Text>
         </View>
       );
     }
@@ -255,12 +220,24 @@ const renderContentBasedOnThreshold = () => {
           mainText={contents.find(item => item.index === resultContent)?.header}
           subText={contents.find(item => item.index === resultContent)?.subHeader}
         />
-        <ScrollView style={styles.container}>
+        <View style={styles.contentContainer}>
           {renderContentBasedOnThreshold()}
-        </ScrollView>
-        <TouchableOpacity onPress={() => setIsNoteModalVisible(true)} style={styles.notesButton}>
-          <Text style={styles.notesButtonText}>Take Notes</Text>
-        </TouchableOpacity>
+          <View style={styles.buttonContainer}>
+            {(resultContent === 'ss' || resultContent === 'frailtylow') ? (
+              <View style={[styles.overrideContainer, overrideStatus['override'] && styles.selectedContainer]}>
+                <Checkbox
+                  value={overrideStatus['override']}
+                  onValueChange={handleOverride}
+                />
+                <Text style={styles.bigText}>The Patient is in need of further screening anyway</Text>
+              </View>
+            ) : (<View></View>)}
+            <TouchableOpacity onPress={() => setIsNoteModalVisible(true)} style={styles.notesButton}>
+              <Text style={styles.notesButtonText}>Take Notes</Text>
+              <AntDesign name="form" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
+        </View>
         <Footer
           nextText='Finish'
           handleBack={handleBack}
@@ -284,8 +261,29 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  containerWithOverride: {
+  contentContainer: {
+    flex: 1,
+    paddingHorizontal: scale(25),
+    paddingVertical: scale(5),
     justifyContent: 'space-between',
+  },
+  overrideContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(10),
+    borderWidth: scale(2),
+    height: scale(60),
+    borderRadius: scale(8),
+    paddingHorizontal: scale(25),
+  },
+  selectedContainer: {
+    borderColor: 'blue',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: scale(5),
   },
   bigText: {
     fontSize: scale(20),
@@ -299,15 +297,16 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   notesButton: {
-    backgroundColor: '#0000FF', 
     height: scale(60),
     width: scale(220),
-    borderRadius: 8, 
+    borderRadius: scale(8), 
+    borderWidth: scale(2),
     alignItems: 'center', 
     justifyContent: 'center', 
+    flexDirection: 'row',
+    gap: scale(10),
   },
   notesButtonText: {
-    color: 'white',
     fontSize: scale(20),
     fontWeight: 'bold',
   },
@@ -321,6 +320,7 @@ const styles = StyleSheet.create({
   riskContainer:{
     justifyContent: 'space-evenly',
     alignItems: 'center',
+    paddingVertical: scale(100),
   },
   modalButton: {
     backgroundColor: 'blue',
