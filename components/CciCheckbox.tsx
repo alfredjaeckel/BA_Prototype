@@ -18,6 +18,9 @@ interface CciCheckboxProps {
 
 const CciCheckbox: React.FC<CciCheckboxProps> = ({ index, name, weight, value, showInfo, info, onValueChange, handleSelectorChange, handleQuestionMarkClick }) => {
   return (
+    <TouchableOpacity
+    onPress={() => onValueChange(!value)}
+    >
     <View style={[styles.checkboxFrame, value && styles.highlightFrame]}>
       <View style={styles.checkboxStart}>
         <Checkbox value={value} onValueChange={onValueChange} />
@@ -59,6 +62,7 @@ const CciCheckbox: React.FC<CciCheckboxProps> = ({ index, name, weight, value, s
         )}
       </View>
     </View>
+    </TouchableOpacity>
   );
 };
 
