@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal, Button, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import CciCheckbox from '../../components/CciCheckbox'; 
-import Selector from '../../components/selector'; 
 import { conditionState, setConditionWeight, setConditionValue, sumConditionValues } from '../../constants/ccidata';
 import { scale } from '../../utils/scaling';
 import { useCompletionStatus, useThresholdStatus, useVisitedStatus } from '../../contexts/CompletionContext'; 
+import CciInfoModal from '@/components/CciInfoModal';
+import Footer from '@/components/footer';
+import Header from '@/components/header';
 
 const CciPage: React.FC = () => {
   const [conditions, setConditions] = useState(conditionState);
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [popupContent, setPopupContent] = useState({ name: '', info: '' });
+  const [isCciInfoVisible, setIsCciInfoVisible] = useState(false);
+  const [cciInfoContent, setCciInfoContent] = useState({ name: '', info: '' });
   const router = useRouter();
   const { setCompletionStatus } = useCompletionStatus();
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -61,8 +63,8 @@ const CciPage: React.FC = () => {
   
 
   const handleQuestionMarkClick = (name: string, info: string) => {
-    setPopupContent({ name, info });
-    setIsPopupVisible(true);
+    setCciInfoContent({ name, info });
+    setIsCciInfoVisible(true);
   };
 
   const handleNext = () => {
@@ -78,10 +80,10 @@ const CciPage: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.bigText}>Please select the patients conditions</Text>
-        <Text style={styles.litteText}>High risk of developing POD if CCI {'>'} 1</Text>
-      </View>
+      <Header
+        mainText="Please select the patients conditions"
+        subText="High risk of developing POD if CCI > 1"
+      />
       <ScrollView>
         <View style={styles.checkboxContainer}>
           {conditions.map((condition) => (
@@ -99,34 +101,18 @@ const CciPage: React.FC = () => {
                 />
             </View>
           ))}
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={isPopupVisible}
-          >
-            <TouchableWithoutFeedback onPress={() => setIsPopupVisible(false)}>
-              <View style={styles.modalOverlay}>
-                <TouchableWithoutFeedback>
-                  <View style={styles.modalView}>
-                    <Text style={styles.modalTitle}>{popupContent.name}</Text>
-                    <Text style={styles.modalText}>{popupContent.info}</Text>
-                    <Button title="Close" onPress={() => setIsPopupVisible(false)} />
-                  </View>
-                </TouchableWithoutFeedback>
-              </View>
-            </TouchableWithoutFeedback>
-          </Modal>
-          {/*<Text style={styles.sumText}>Total Weight: {sumConditionValues()}</Text>*/}
+          <CciInfoModal
+            isCciInfoModalVisible={isCciInfoVisible}
+            name={cciInfoContent.name}
+            info={cciInfoContent.info}
+            onClose={() => setIsCciInfoVisible(false)}
+          />
         </View>
       </ScrollView>
-      <View style={styles.footer}>
-        <TouchableOpacity 
-          onPress={handleNext}
-          style={styles.nextButton}
-        >
-          <Text style={styles.nextButtonText}>Next</Text>
-        </TouchableOpacity>
-      </View>
+      <Footer
+        back={false}
+        handleNext={handleNext}
+      />
     </View>
   );
 };
@@ -135,75 +121,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: scale(25),
-    borderBottomWidth: 1,
-    height: scale(80),
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    paddingHorizontal: scale(25),
-    borderTopWidth: 1,
-    height: scale(80),
-  },
-  bigText: {
-    fontSize: scale(20),
-    fontWeight: 'bold',
-  },
-  litteText: {
-    fontSize: scale(16),
-  },
   checkboxContainer: {
     paddingHorizontal: scale(25),
     paddingVertical: scale(5),
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center"
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  nextButton: {
-    backgroundColor: '#0000FF',
-    height: scale(60),
-    width: scale(220),
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  nextButtonText: {
-    color: 'white',
-    fontSize: scale(20),
-    fontWeight: 'bold',
   },
 });
 

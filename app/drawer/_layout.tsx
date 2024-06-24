@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
-import { Link, Stack, useRouter, useSegments } from 'expo-router';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { scaleWidth, scale } from '@/utils/scaling';
-import { CompletionProvider, useCompletionStatus, useThresholdStatus, useOverrideStatus } from '@/contexts/CompletionContext';
-import { NotesProvider } from '@/contexts/NotesContext';
-import NoteTakingModal from './NoteTakingModal';
+import { useCompletionStatus, useThresholdStatus, useOverrideStatus } from '@/contexts/CompletionContext';
+import ExitModal from '@/components/ExitModal';
+import IncompleteModal from '@/components/IncompleteModal';
 
 const screenOptions = { headerShown: false };
 
@@ -12,13 +12,13 @@ const Sidebar: React.FC = () => {
   const router = useRouter();
   const segments = useSegments();
   const { completionStatus, setCompletionStatus, getFirstIncompletePage } = useCompletionStatus();
-  const { thresholdStatus, setThresholdStatus } = useThresholdStatus();
+  const { thresholdStatus} = useThresholdStatus();
   const { setOverrideStatus } = useOverrideStatus();
   const [showIncompleteModal, setShowIncompleteModal] = React.useState(false);
   const [showExitModal, setShowExitModal] = React.useState(false);
   const [exitLowRisk, setExitLowRisk] = React.useState(false);
   const [exitHighRisk, setExitHighRisk] = React.useState(false);
-  const [isNoteModalVisible, setIsNoteModalVisible] = React.useState(false);
+  const [exitUnknownRisk, setExitUnknownRisk] = React.useState(false);
 
   useEffect(() => {
     setOverrideStatus('override', false);
@@ -26,19 +26,31 @@ const Sidebar: React.FC = () => {
   
   useEffect(() => {
     if(exitLowRisk){
+      console.log('exitLowRisk');
       setOverrideStatus('override', true);
       setOverrideStatus('newValue', false);
+      setShowExitModal(false);
       router.push('startpage');
     }
   }, [exitLowRisk]);
 
   useEffect(() => {
     if(exitHighRisk){
+      console.log('exitHighRisk');
       setOverrideStatus('override', true);
       setOverrideStatus('newValue', true);
+      setShowExitModal(false);
       router.push('startpage');
     }
   }, [exitHighRisk]);
+
+  useEffect(() => {
+    if(exitUnknownRisk){
+      console.log('exitUnknownRisk');
+      setShowExitModal(false);
+      router.push('startpage');
+    }
+  }, [exitUnknownRisk]);
 
 
   useEffect(() => {
@@ -170,54 +182,18 @@ const Sidebar: React.FC = () => {
           <Text style={styles.exitButtonText}>Exit</Text>
       </TouchableOpacity>
       {/* Exit Modal */}
-      <Modal visible={showExitModal} animationType="slide" transparent>
-        <TouchableWithoutFeedback onPress={() => setShowExitModal(false)}>
-          <View style={styles.modalBackground}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalText}>Are you shure you want to exit?</Text>
-              <View style={styles.exitButtonContainer}>
-                <TouchableOpacity onPress={() => [setShowExitModal(false), setExitLowRisk(true)]} style={styles.modalButton}>
-                  <Text style={styles.modalButtonText}>Exit and set risk to low</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => [setShowExitModal(false), setExitHighRisk(true)]} style={styles.modalButton}>
-                  <Text style={styles.modalButtonText}>Exit and set risk to high</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => [setShowExitModal(false), router.push('startpage')]} style={styles.modalButton}>
-                  <Text style={styles.modalButtonText}>Exit</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setShowExitModal(false)} style={styles.modalButton}>
-                  <Text style={styles.modalButtonText}>Cancel</Text>
-                </TouchableOpacity>
-              </View>
-              <TouchableOpacity onPress={() => [setShowExitModal(false), setIsNoteModalVisible(true), console.log('press')]} style={styles.notesButton}>
-                <Text style={styles.notesButtonText}>Take Notes</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
-      {/* Note Modal*/}
-      <Modal
-        visible={isNoteModalVisible}
-        animationType="slide"
-        transparent={false}
-        onRequestClose={() => setIsNoteModalVisible(false)}
-        >
-          <NoteTakingModal onClose={() => [setIsNoteModalVisible(false), setShowExitModal(true)]} />
-      </Modal>
+      <ExitModal
+        isExitModalVisible={showExitModal}
+        onClose={() => setShowExitModal(false)}
+        setExitLowRisk={() => setExitLowRisk(true)}
+        setExitHighRisk={() => setExitHighRisk(true)}
+        setExitUnknownRisk={() => setExitUnknownRisk(true)}
+      />
       {/* Incomplete Modal */}
-      <Modal visible={showIncompleteModal} animationType="slide" transparent>
-        <TouchableWithoutFeedback onPress={() => setShowIncompleteModal(false)}>
-          <View style={styles.modalBackground}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalText}>Please complete the other pages first.</Text>
-              <TouchableOpacity onPress={() => setShowIncompleteModal(false)} style={styles.modalButton}>
-                <Text style={styles.modalButtonText}>OK</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+      <IncompleteModal
+        isIncompleteModalVisible={showIncompleteModal}
+        onClose={() => setShowIncompleteModal(false)}
+      />
     </View>
   );
 };
@@ -328,38 +304,6 @@ const styles = StyleSheet.create({
   content: {
     flex: 1
   },
-  modalBackground: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    padding: scale(20),
-    borderRadius: scale(10),
-    width: '80%',
-    alignItems: 'center',
-  },
-  modalText: {
-    fontSize: scale(18),
-    marginBottom: scale(20),
-    textAlign: 'center',
-  },
-  modalButton: {
-    backgroundColor: 'blue',
-    paddingVertical: scale(10),
-    paddingHorizontal: scale(20),
-    borderRadius: scale(5),
-    marginVertical: scale(5),
-  },
-  modalButtonText: {
-    color: 'white',
-    fontSize: scale(16),
-  },
-  exitButtonContainer: {
-    padding: scale(20),
-  },
   exitButton: {
     backgroundColor: '#FFCCCC',
     height: scale(60),
@@ -370,19 +314,6 @@ const styles = StyleSheet.create({
   },
   exitButtonText: {
     color: 'red',
-    fontSize: scale(20),
-    fontWeight: 'bold',
-  },
-  notesButton: {
-    backgroundColor: '#0000FF', 
-    height: scale(60),
-    width: scale(220),
-    borderRadius: 8, 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-  },
-  notesButtonText: {
-    color: 'white',
     fontSize: scale(20),
     fontWeight: 'bold',
   },

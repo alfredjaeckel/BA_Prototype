@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { scale, scaleHeight, scaleWidth } from '@/utils/scaling';
+import { scale } from '@/utils/scaling';
 import { useCompletionStatus, useThresholdStatus, useVisitedStatus } from '@/contexts/CompletionContext'; 
 import ExclusiveRadioButtons from '@/components/ExclusiveRadioButtons';
+import Footer from '@/components/footer';
+import Header from '@/components/header';
 
 const SSPage: React.FC = () => {
   const router = useRouter();
-  const { completionStatus, setCompletionStatus, getLastCompletePage } = useCompletionStatus();
+  const { setCompletionStatus } = useCompletionStatus();
   const { thresholdStatus, setThresholdStatus } = useThresholdStatus();
   const { visitedStatus, setVisitedStatus } = useVisitedStatus();
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -45,10 +47,10 @@ const SSPage: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.bigText}>Please select the patient's surgery site</Text>
-        <Text style={styles.litteText}>Low risk of developing POD if surgery site is peripheral</Text>
-      </View>
+      <Header
+        mainText="Please select the patient's surgery site"
+        subText="Low risk of developing POD if surgery site is peripheral"
+      />
       <ScrollView style={styles.checkboxContainer}>
         <ExclusiveRadioButtons
           option1Label="Non-peripheral"
@@ -62,20 +64,10 @@ const SSPage: React.FC = () => {
           }}
         />
       </ScrollView>
-      <View style={styles.footer}>
-        <TouchableOpacity 
-          onPress={handleBack}
-          style={styles.backButton}
-        >
-          <Text style={styles.backButtonText}>Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          onPress={handleNext}
-          style={styles.nextButton}
-        >
-          <Text style={styles.nextButtonText}>Next</Text>
-        </TouchableOpacity>
-      </View>
+      <Footer
+        handleBack={handleBack}
+        handleNext={handleNext}
+      />
     </View>
   );
 };
@@ -87,55 +79,6 @@ const styles = StyleSheet.create({
   checkboxContainer: {
     paddingHorizontal: scale(25),
     paddingVertical: scale(5),
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: scale(25),
-    borderBottomWidth: 1,
-    height: scaleHeight(80),
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: scale(25),
-    borderTopWidth: 1,
-    height: scale(80),
-  },
-  bigText: {
-    fontSize: scale(20),
-    fontWeight: 'bold',
-  },
-  litteText: {
-    fontSize: scale(16),
-  },
-  nextButton: {
-    backgroundColor: '#0000FF', 
-    height: scale(60),
-    width: scale(220),
-    borderRadius: 8, 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-  },
-  nextButtonText: {
-    color: 'white',
-    fontSize: scale(20),
-    fontWeight: 'bold',
-  },
-  backButton: {
-    backgroundColor: '#CCCCFF', 
-    height: scale(60),
-    width: scale(220),
-    borderRadius: 8, 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-  },
-  backButtonText: {
-    color: 'blue',
-    fontSize: scale(20),
-    fontWeight: 'bold',
   },
 });
 

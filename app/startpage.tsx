@@ -1,8 +1,7 @@
-// src/pages/StartPage.tsx
 import React from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useCompletionStatus, useThresholdStatus, useVisitedStatus, useOverrideStatus } from '@/contexts/CompletionContext'; 
+import { useCompletionStatus, useThresholdStatus, useOverrideStatus } from '@/contexts/CompletionContext'; 
 import { useNotes } from '@/contexts/NotesContext';
 import { scale } from '@/utils/scaling';
 import { Ionicons } from '@expo/vector-icons';

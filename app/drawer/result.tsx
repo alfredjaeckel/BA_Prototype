@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TouchableWithoutFeedback, Button } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useCompletionStatus, useThresholdStatus, useOverrideStatus } from '@/contexts/CompletionContext';
 import { scale } from '@/utils/scaling';
-import { FA5Style } from '@expo/vector-icons/build/FontAwesome5';
-import NoteTakingModal from './NoteTakingModal';
+import NoteTakingModal from '../../components/NoteTakingModal';
 import Checkbox from '@/components/checkbox';
+import AutoNavigationModal from '@/components/AutoNavigtionModal';
+import Footer from '@/components/footer';
+import Header from '@/components/header';
 
 const ResultPage: React.FC = () => {
   const router = useRouter();
   const { thresholdStatus, setThresholdStatus} = useThresholdStatus();
   const { completionStatus, setCompletionStatus, getLastCompletePage } = useCompletionStatus();
   const { overrideStatus, setOverrideStatus } = useOverrideStatus();
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [isAutoNavigationModalVisible, setIsAutoNavigationModalVisible] = useState(false);
   const [isNoteModalVisible, setIsNoteModalVisible] = React.useState(false);
   const { showPopup } = useLocalSearchParams();
   const [overrideHighRisk, setOverrideHighRisk] = useState(false);
@@ -31,10 +33,15 @@ const handleBack = () => {
   router.push(`/drawer/${lastCompletePage}`);
 };
 
+const handleUndo = () => {
+  setIsAutoNavigationModalVisible(false);
+  handleBack();
+}
+
 useEffect(() => {
   if (showPopup === 'true') {
-    setIsPopupVisible(true);
-    const timer = setTimeout(() => setIsPopupVisible(false), 5000); // 5 seconds
+    setIsAutoNavigationModalVisible(true);
+    const timer = setTimeout(() => setIsAutoNavigationModalVisible(false), 5000); // 5 seconds
     return () => clearTimeout(timer);
   }
 }, [showPopup]);
@@ -244,56 +251,31 @@ const renderContentBasedOnThreshold = () => {
 
   return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.bigText}>{contents.find(item => item.index === resultContent)?.header}</Text>
-          <Text style={styles.litteText}>{contents.find(item => item.index === resultContent)?.subHeader}</Text>
-        </View>
+        <Header
+          mainText={contents.find(item => item.index === resultContent)?.header}
+          subText={contents.find(item => item.index === resultContent)?.subHeader}
+        />
         <ScrollView style={styles.container}>
           {renderContentBasedOnThreshold()}
         </ScrollView>
         <TouchableOpacity onPress={() => setIsNoteModalVisible(true)} style={styles.notesButton}>
           <Text style={styles.notesButtonText}>Take Notes</Text>
         </TouchableOpacity>
-        <View style={styles.footer}>
-          <TouchableOpacity 
-            onPress={handleBack}
-            style={styles.backButton}
-          >
-            <Text style={styles.backButtonText}>Back</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            onPress={handleNext}
-            style={styles.nextButton}
-          >
-            <Text style={styles.nextButtonText}>Finish</Text>
-          </TouchableOpacity>
-        </View>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={isPopupVisible}
-        >
-          <TouchableWithoutFeedback onPress={() => setIsPopupVisible(false)}>
-            <View style={styles.modalOverlay}>
-              <TouchableWithoutFeedback>
-                <View style={styles.modalView}>
-                  <Text style={styles.modalTitle}>Threshold met!</Text>
-                  <Text style={styles.modalText}>Navigated here automatically.</Text>
-                  <Button title="Close" onPress={() => setIsPopupVisible(false)} />
-                  <Button title="Undo" onPress={() => handleBack()} />
-                </View>
-              </TouchableWithoutFeedback>
-            </View>
-          </TouchableWithoutFeedback>
-        </Modal>
-        <Modal
-        visible={isNoteModalVisible}
-        animationType="slide"
-        transparent={false}
-        onRequestClose={() => setIsNoteModalVisible(false)}
-        >
-          <NoteTakingModal onClose={() => setIsNoteModalVisible(false)} />
-        </Modal>
+        <Footer
+          nextText='Finish'
+          handleBack={handleBack}
+          handleNext={handleNext}
+        />
+        <AutoNavigationModal
+          isAutoNavigationModalVisible={isAutoNavigationModalVisible}
+          onClose={() => setIsAutoNavigationModalVisible(false)}
+          onUndo={handleUndo}
+        />
+        <NoteTakingModal 
+          onClose={() => setIsNoteModalVisible(false)}
+          isNoteModalVisible={isNoteModalVisible}
+        />
+
       </View>
   );
 };
@@ -305,22 +287,6 @@ const styles = StyleSheet.create({
   containerWithOverride: {
     justifyContent: 'space-between',
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: scale(25),
-    borderBottomWidth: 1,
-    height: scale(80),
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: scale(25),
-    borderTopWidth: 1,
-    height: scale(80),
-  },
   bigText: {
     fontSize: scale(20),
     fontWeight: 'bold',
@@ -331,19 +297,6 @@ const styles = StyleSheet.create({
   litteText: {
     fontSize: scale(16),
     textAlign: 'right',
-  },
-  nextButton: {
-    backgroundColor: '#0000FF', 
-    height: scale(60),
-    width: scale(220),
-    borderRadius: 8, 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-  },
-  nextButtonText: {
-    color: 'white',
-    fontSize: scale(20),
-    fontWeight: 'bold',
   },
   notesButton: {
     backgroundColor: '#0000FF', 
@@ -358,48 +311,9 @@ const styles = StyleSheet.create({
     fontSize: scale(20),
     fontWeight: 'bold',
   },
-  backButton: {
-    backgroundColor: '#CCCCFF', 
-    height: scale(60),
-    width: scale(220),
-    borderRadius: 8, 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-  },
-  backButtonText: {
-    color: 'blue',
-    fontSize: scale(20),
-    fontWeight: 'bold',
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-  },
   modalText: {
     marginBottom: 15,
     textAlign: "center"
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   flexRow: {
     flexDirection: 'row',
