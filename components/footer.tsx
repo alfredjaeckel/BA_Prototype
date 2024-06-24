@@ -47,8 +47,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: scale(25),
+    paddingBottom: scale(5),
     borderTopWidth: 1,
-    height: scale(80),
+    height: scale(85),
   },
   nextButton: {
     backgroundColor: '#0000FF', 
