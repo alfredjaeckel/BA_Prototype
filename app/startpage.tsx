@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { useCompletionStatus, useThresholdStatus, useVisitedStatus, useOverrideStatus } from '@/contexts/CompletionContext'; 
 import { useNotes } from '@/contexts/NotesContext';
 import { scale } from '@/utils/scaling';
+import { Ionicons } from '@expo/vector-icons';
 
 
 const StartPage: React.FC = () => {
@@ -58,21 +59,22 @@ const StartPage: React.FC = () => {
       <View style={styles.page}>
         <TouchableOpacity 
           onPress={handleStart} 
-          style={styles.button}
+          style={styles.startContainer}
         >
           {forecastStatus()}
-          <ScrollView style={styles.notesContainer}>
-          {notes.length > 0 ? (
-            notes.map((note, index) => (
-              <View key={index} style={styles.note}>
-                <Text>{note}</Text>
-                <Button title="Delete" onPress={() => deleteNote(index)} />
-              </View>
-            ))
-          ) : (
-            <Text>No notes available</Text>
+          {notes.length > 0 && (
+            <ScrollView  style={styles.notesContainer}>
+              <Text style={styles.bigText}>Notes:</Text>
+              {notes.map((note, index) => (
+                <View key={index} style={styles.noteContainer}>
+                  <Text style={styles.note}>{note}</Text>
+                  <TouchableOpacity onPress={() => deleteNote(index)}>
+                    <Ionicons name="trash" size={20} color="red" />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </ScrollView>
           )}
-        </ScrollView>
         </TouchableOpacity>
       </View>
     </View>
@@ -92,13 +94,16 @@ const styles = StyleSheet.create({
   },
   page: {
     flex: 1,
-    padding: scale(40),
+    padding: scale(25),
   },
-  button: {
+  startContainer: {
+    paddingVertical: scale(10),
+    paddingHorizontal: scale(25),
+    margin: scale(5),
+    gap: scale(10),
     borderWidth: scale(2),
     borderRadius: scale(8),
     justifyContent: 'center',
-    paddingHorizontal: scale(20),
   },
   title: {
     fontSize: scale(24),
@@ -106,17 +111,23 @@ const styles = StyleSheet.create({
   },
   bigText: {
     fontSize: scale(20),
+    fontWeight: 'bold',
   },
   notesContainer: {
-    marginTop: scale(20),
+    borderTopWidth: 1,
+    gap: scale(5),
+    padding: scale(10),
+  },
+  noteContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 8,
+    borderTopColor: 'gray',
+    borderTopWidth: 1,
   },
   note: {
-    padding: scale(10),
-    borderBottomWidth: 1,
-    borderColor: '#ddd',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center'
+    fontSize: scale(16),
   },
 });
 

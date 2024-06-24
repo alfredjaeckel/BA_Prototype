@@ -162,11 +162,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: scale(25),
     paddingVertical: scale(5),
   },
-  sumText: {
-    fontSize: 18,
-    marginVertical: 20,
-    fontWeight: 'bold',
-  },
   modalView: {
     margin: 20,
     backgroundColor: "white",
