@@ -55,14 +55,14 @@ interface Content {
   index: string;
   header: string;
   subHeader: string;
-  back: string;
 }
 const contents: Content[] = [
-  {index: 'cci', header: 'Please select the patients conditions', subHeader: 'High risk of developing POD if CCI > 1', back: '/drawer/cci'},
-  {index: 'asa', header: 'Please select the patient\'s ASA PS', subHeader: 'High risk of developing POD if ASA PS III or higher', back: '/drawer/asa'},
-  {index: 'ss', header: 'Please select the patient\'s surgery site', subHeader: 'Low risk of developing POD if surgery site is peripheral', back: '/drawer/ss'},
-  {index: 'frailtyhigh', header: 'Please select the patients frailty status', subHeader: 'Low risk of developing POD if stable \n High risk of developing POD if pre-frail or frail', back: '/drawer/frailty'},
-  {index: 'frailtylow', header: 'Please select the patients frailty status', subHeader: 'Low risk of developing POD if stable \n High risk of developing POD if pre-frail or frail', back: '/drawer/frailty'},
+  {index: 'cci', header: 'High risk of developing POD', subHeader: 'High risk of developing POD if CCI > 1'},
+  {index: 'asa', header: 'High risk of developing POD', subHeader: 'High risk of developing POD if ASA PS III or higher'},
+  {index: 'ss', header: 'Low risk of developing POD', subHeader: 'Low risk of developing POD if surgery site is peripheral'},
+  {index: 'frailtyhigh', header: 'High risk of developing POD', subHeader: 'Low risk of developing POD if stable \n High risk of developing POD if pre-frail or frail'},
+  {index: 'frailtylow', header: 'Low risk of developing POD', subHeader: 'Low risk of developing POD if stable \n High risk of developing POD if pre-frail or frail'},
+  {index: 'none', header: 'Risk has not been determined', subHeader: ''},
 ];
 
 useEffect(() => {
