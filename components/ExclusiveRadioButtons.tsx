@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import RadioButton from './RadioButton';
 
@@ -37,11 +37,5 @@ const ExclusiveRadioButtons: React.FC<ExclusiveRadioButtonsProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-  },
-});
 
 export default ExclusiveRadioButtons;
