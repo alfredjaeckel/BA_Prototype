@@ -2,16 +2,18 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { scaleWidth, scale } from '@/utils/scaling';
-import { useCompletionStatus, useThresholdStatus, useOverrideStatus } from '@/contexts/CompletionContext';
+import { useCompletionStatus, useThresholdStatus, useOverrideStatus, useFileStatus } from '@/contexts/CompletionContext';
 import ExitModal from '@/components/ExitModal';
 import IncompleteModal from '@/components/IncompleteModal';
+import FileModal from '@/components/FileModal';
 
 const screenOptions = { headerShown: false };
 
 const Sidebar: React.FC = () => {
   const router = useRouter();
   const segments = useSegments();
-  const { completionStatus, setCompletionStatus, getFirstIncompletePage } = useCompletionStatus();
+  const { completionStatus, setCompletionStatus, getFirstIncompletePage, getLastCompletePage } = useCompletionStatus();
+  const { fileStatus } = useFileStatus();
   const { thresholdStatus} = useThresholdStatus();
   const { setOverrideStatus } = useOverrideStatus();
   const [showIncompleteModal, setShowIncompleteModal] = React.useState(false);
@@ -54,25 +56,25 @@ const Sidebar: React.FC = () => {
 
 
   useEffect(() => {
-    setCompletionStatus('ss', false);
-    setCompletionStatus('asa', false);
-    setCompletionStatus('frailty', false);
-    setCompletionStatus('result', false);
+    setCompletionStatus('ss', fileStatus['ss']);
+    setCompletionStatus('asa', fileStatus['asa']);
+    setCompletionStatus('frailty', fileStatus['frailty']);
+    setCompletionStatus('result', fileStatus['result']);
   }, [thresholdStatus['cci']]);
 
   useEffect(() => {
-    setCompletionStatus('asa', false);
-    setCompletionStatus('frailty', false);
-    setCompletionStatus('result', false);
+    setCompletionStatus('asa', fileStatus['asa']);
+    setCompletionStatus('frailty', fileStatus['frailty']);
+    setCompletionStatus('result', fileStatus['result']);
   }, [thresholdStatus['ss']]);
 
   useEffect(() => {
-    setCompletionStatus('frailty', false);
-    setCompletionStatus('result', false);
+    setCompletionStatus('frailty', fileStatus['frailty']);
+    setCompletionStatus('result', fileStatus['result']);
   }, [thresholdStatus['asa']]);
 
   useEffect(() => {
-    setCompletionStatus('result', false);
+    setCompletionStatus('result', fileStatus['result']);
   }, [thresholdStatus['frailty']]);
   
 
@@ -206,16 +208,31 @@ const Sidebar: React.FC = () => {
 
 const MainLayout: React.FC = () => {
   const router = useRouter();
-  const { getFirstIncompletePage } = useCompletionStatus();
+  const { getFirstIncompletePage, getLastCompletePage } = useCompletionStatus();
+  const { fileStatus } = useFileStatus();
   const segments = useSegments(); 
+  const [fileModal, setFileModal] = React.useState(false);
+  const [showFileModal, setShowFileModal] = React.useState(false);
   
 
   useEffect(() => {
     if (segments.join('/') === 'drawer') {
       const firstIncompletePage = getFirstIncompletePage();
+      const lastCompletePage = getLastCompletePage();
+      if (fileStatus[lastCompletePage]) {
+        setFileModal(true);
+      }
       router.push(`/drawer/${firstIncompletePage}`);
     }
   }, [segments, getFirstIncompletePage, router]);
+
+  useEffect(() => {
+    if (fileModal === true) {
+      setShowFileModal(true);
+      const timer = setTimeout(() => setShowFileModal(false), 6000);
+      return () => clearTimeout(timer);
+    }
+  }, [fileModal]);
 
   return (
     <View style={styles.container}>
@@ -228,6 +245,10 @@ const MainLayout: React.FC = () => {
           <Stack.Screen name="frailty" options={screenOptions} />
           <Stack.Screen name="result" options={screenOptions} />
         </Stack>
+        <FileModal
+          isFileModalVisible={showFileModal}
+          onClose={() => setShowFileModal(false)}
+        />
       </View>
     </View>
   );
