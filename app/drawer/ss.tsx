@@ -9,10 +9,11 @@ import Header from '@/components/header';
 
 const SSPage: React.FC = () => {
   const router = useRouter();
-  const { setCompletionStatus } = useCompletionStatus();
+  const { setCompletionStatus, getFirstIncompletePage } = useCompletionStatus();
   const { thresholdStatus, setThresholdStatus } = useThresholdStatus();
   const { visitedStatus, setVisitedStatus } = useVisitedStatus();
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [isHandleNext, setIsHandleNext] = useState(false);
 
   useEffect(() => {
     if (!visitedStatus['ss'] && hasInteracted) {
@@ -30,15 +31,21 @@ const SSPage: React.FC = () => {
     }
   }, [thresholdStatus]);
   
+  useEffect(() => {
+    if (isHandleNext) {
+      if (thresholdStatus['ss']) {
+        setVisitedStatus('ss', true);
+        router.push('/drawer/result');
+      } else {
+        setVisitedStatus('ss', true);
+        router.push(`/drawer/${getFirstIncompletePage()}`);
+      }
+    }
+  }, [isHandleNext]);
+
   const handleNext = () => {
     setCompletionStatus('ss', true);
-    if (thresholdStatus['ss']) {
-      setVisitedStatus('ss', true);
-      router.push('/drawer/result');
-    } else {
-      setVisitedStatus('ss', true);
-      router.push('/drawer/asa');
-    }
+    setIsHandleNext(true);
   };
 
   const handleBack = () => {

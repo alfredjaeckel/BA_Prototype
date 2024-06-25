@@ -9,10 +9,11 @@ import Header from '@/components/header';
 
 const ASAPage: React.FC = () => {
   const router = useRouter();
-  const { setCompletionStatus } = useCompletionStatus();
+  const { setCompletionStatus, getFirstIncompletePage } = useCompletionStatus();
   const { thresholdStatus, setThresholdStatus } = useThresholdStatus();
   const { visitedStatus, setVisitedStatus } = useVisitedStatus();
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [isHandleNext, setIsHandleNext] = useState(false);
 
   useEffect(() => {
     if (!visitedStatus['asa'] && hasInteracted) {
@@ -30,15 +31,21 @@ const ASAPage: React.FC = () => {
     }
   }, [thresholdStatus]);
 
+  useEffect(() => {
+    if (isHandleNext) {
+      if (thresholdStatus['asa']) {
+        setVisitedStatus('asa', true);
+        router.push('/drawer/result');
+      } else {
+        setVisitedStatus('asa', true);
+        router.push(`/drawer/${getFirstIncompletePage()}`);
+      }
+    }
+  }, [isHandleNext]);
+
   const handleNext = () => {
     setCompletionStatus('asa', true);
-    if (thresholdStatus['asa']) {
-      setVisitedStatus('asa', true);
-      router.push('/drawer/result');
-    } else {
-      setVisitedStatus('asa', true);
-      router.push('/drawer/frailty');
-    }
+    setIsHandleNext(true);
   };
 
   const handleBack = () => {

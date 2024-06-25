@@ -14,10 +14,11 @@ const CciPage: React.FC = () => {
   const [isCciInfoVisible, setIsCciInfoVisible] = useState(false);
   const [cciInfoContent, setCciInfoContent] = useState({ name: '', info: '' });
   const router = useRouter();
-  const { setCompletionStatus } = useCompletionStatus();
+  const { setCompletionStatus, getFirstIncompletePage } = useCompletionStatus();
   const [hasInteracted, setHasInteracted] = useState(false);
   const { thresholdStatus, setThresholdStatus } = useThresholdStatus();
   const { visitedStatus, setVisitedStatus } = useVisitedStatus();
+  const [isHandleNext, setIsHandleNext] = useState(false);
   
   useEffect(() => {
     const sum = sumConditionValues();
@@ -41,8 +42,20 @@ const CciPage: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [thresholdStatus]);
-  
 
+  useEffect(() => {
+    if (isHandleNext) {
+      if (thresholdStatus['cci']) {
+        setVisitedStatus('cci', true);
+        router.push('/drawer/result');
+      } else {
+        setVisitedStatus('cci', true);
+        router.push(`/drawer/${getFirstIncompletePage()}`);
+      }
+    }
+  }, [isHandleNext]);
+
+  
   const handleCheckboxChange = useCallback((index: number, value: boolean) => {
     setHasInteracted(true);
     setConditionValue(index, value);
@@ -61,13 +74,7 @@ const CciPage: React.FC = () => {
 
   const handleNext = () => {
     setCompletionStatus('cci', true);
-    if (thresholdStatus['cci']) {
-      setVisitedStatus('cci', true);
-      router.push('/drawer/result');
-    } else {
-      setVisitedStatus('cci', true);
-      router.push('/drawer/ss');
-    }
+    setIsHandleNext(true);
   };
 
   return (
