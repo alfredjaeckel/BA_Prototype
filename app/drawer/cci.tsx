@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import CciCheckbox from '../../components/CciCheckbox'; 
-import { conditionState, setConditionWeight, setConditionValue, sumConditionValues } from '../../constants/ccidata';
+import useConditions from '@/constants/ccidata';
 import { scale } from '../../utils/scaling';
 import { useCompletionStatus, useThresholdStatus, useVisitedStatus } from '../../contexts/CompletionContext'; 
 import CciInfoModal from '@/components/CciInfoModal';
@@ -10,7 +10,7 @@ import Footer from '@/components/footer';
 import Header from '@/components/header';
 
 const CciPage: React.FC = () => {
-  const [conditions, setConditions] = useState(conditionState);
+  const { conditionState, setConditionValue, setConditionWeight, sumConditionValues } = useConditions();
   const [isCciInfoVisible, setIsCciInfoVisible] = useState(false);
   const [cciInfoContent, setCciInfoContent] = useState({ name: '', info: '' });
   const router = useRouter();
@@ -18,17 +18,13 @@ const CciPage: React.FC = () => {
   const [hasInteracted, setHasInteracted] = useState(false);
   const { thresholdStatus, setThresholdStatus } = useThresholdStatus();
   const { visitedStatus, setVisitedStatus } = useVisitedStatus();
-
-  useEffect(() => {
-    setConditions([...conditionState]);
-  }, []);
-
+  
   useEffect(() => {
     const sum = sumConditionValues();
     if (thresholdStatus['cci'] !== (sum > 1)) {
       setThresholdStatus('cci', sum > 1);
     }
-  }, [conditions, setThresholdStatus]);
+  }, [conditionState, setThresholdStatus, sumConditionValues]);
 
   useEffect(() => {
     if (!visitedStatus['cci'] && hasInteracted) {
@@ -49,17 +45,13 @@ const CciPage: React.FC = () => {
 
   const handleCheckboxChange = useCallback((index: number, value: boolean) => {
     setHasInteracted(true);
-    const updatedConditions = conditions.map(condition => condition.index === index ? { ...condition, value } : condition);
-    setConditions(updatedConditions);
     setConditionValue(index, value);
-  }, [conditions]);
-  
+  }, [setConditionValue]);
+
   const handleSelectorChange = useCallback((index: number, weight: number) => {
     setHasInteracted(true);
-    const updatedConditions = conditions.map(condition => condition.index === index ? { ...condition, weight } : condition);
-    setConditions(updatedConditions);
     setConditionWeight(index, weight);
-  }, [conditions]);
+  }, [setConditionWeight]);
   
 
   const handleQuestionMarkClick = (name: string, info: string) => {
@@ -86,7 +78,7 @@ const CciPage: React.FC = () => {
       />
       <ScrollView>
         <View style={styles.checkboxContainer}>
-          {conditions.map((condition) => (
+          {conditionState.map((condition) => (
             <View key={condition.index}>
                 <CciCheckbox
                   name={condition.name}

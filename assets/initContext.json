@@ -1,0 +1,34 @@
+{
+  "completionStatus": {
+    "cci": false,
+    "ss": false,
+    "asa": false,
+    "frailty": false,
+    "result": false
+  },
+  "thresholdStatus": {
+    "cci": false,
+    "ss": false,
+    "asa": false,
+    "frailty": false,
+    "result": false
+  },
+  "visitedStatus": {
+    "cci": false,
+    "ss": false,
+    "asa": false,
+    "frailty": false,
+    "result": false
+  },
+  "fileStatus": {
+    "cci": false,
+    "ss": false,
+    "asa": false,
+    "frailty": false,
+    "result": false
+  },
+  "overrideStatus": {
+    "override": false,
+    "newValue": false
+  }
+}

@@ -108,7 +108,7 @@ const Sidebar: React.FC = () => {
       case 'cci':
         return threshold ? "CCI > 1" : "CCI ≤ 1";
       case 'ss':
-        return threshold ? "Peripheral" : "Non-p eripheral";
+        return threshold ? "Peripheral" : "Non-peripheral";
       case 'asa':
         return threshold ? "ASA III / IV / V" : "ASA I / II";
       case 'frailty':
@@ -211,7 +211,7 @@ const MainLayout: React.FC = () => {
   
 
   useEffect(() => {
-    if (segments.length === 0) {
+    if (segments.join('/') === 'drawer') {
       const firstIncompletePage = getFirstIncompletePage();
       router.push(`/drawer/${firstIncompletePage}`);
     }

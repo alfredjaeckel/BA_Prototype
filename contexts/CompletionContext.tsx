@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
+import initialData from '@/assets/initContext.json';
 
 interface CompletionContextType {
   completionStatus: Record<string, boolean>;
@@ -17,6 +18,12 @@ interface VisitedContextType {
   setVisitedStatus: (page: string, visited: boolean) => void;
 }
 
+interface FileContextType {
+  fileStatus: Record<string, boolean>;
+  setFileStatus: (page: string, visited: boolean) => void;
+}
+
+
 interface OverrideContextType {
   overrideStatus: Record<string, boolean>;
   setOverrideStatus: (page: string, override: boolean) => void;
@@ -26,38 +33,18 @@ interface OverrideContextType {
 const CompletionContext = createContext<CompletionContextType | undefined>(undefined);
 const ThresholdContext = createContext<ThresholdContextType | undefined>(undefined);
 const VisitedContext = createContext<VisitedContextType | undefined>(undefined);
+const FileContext = createContext<FileContextType | undefined>(undefined);
 const OverrideContext = createContext<OverrideContextType | undefined>(undefined);
 
 export const CompletionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [completionStatus, setCompletionStatusState] = useState<Record<string, boolean>>({
-    cci: false,
-    ss: false,
-    asa: false,
-    frailty: false,
-    result: false,
-  });
 
-  const [thresholdStatus, setThresholdStatusState] = useState<Record<string, boolean>>({
-    cci: false,
-    ss: false,
-    asa: false,
-    frailty: false,
-    result: false,
-  });
+  const [completionStatus, setCompletionStatusState] = useState<Record<string, boolean>>(initialData.completionStatus);
+  const [thresholdStatus, setThresholdStatusState] = useState<Record<string, boolean>>(initialData.thresholdStatus);
+  const [visitedStatus, setVisitedStatusState] = useState<Record<string, boolean>>(initialData.visitedStatus);
+  const [fileStatus, setFileStatusState] = useState<Record<string, boolean>>(initialData.fileStatus);
+  const [overrideStatus, setOverrideStatusState] = useState<Record<string, boolean>>(initialData.overrideStatus);
 
-  const [visitedStatus, setVisitedStatusState] = useState<Record<string, boolean>>({
-    cci: false,
-    ss: false,
-    asa: false,
-    frailty: false,
-    result: false,
-  });
-
-  const [overrideStatus, setOverrideStatusState] = useState<Record<string, boolean>>({
-    override: false,
-    newValue: false,
-  });
-
+  
   const setCompletionStatus = useCallback((page: string, status: boolean) => {
     setCompletionStatusState((prevStatus) => ({
       ...prevStatus,
@@ -76,6 +63,13 @@ export const CompletionProvider: React.FC<{ children: ReactNode }> = ({ children
     setVisitedStatusState((prevStatus) => ({
       ...prevStatus,
       [page]: visited,
+    }));
+  }, []);
+
+  const setFileStatus = useCallback((page: string, file: boolean) => {
+    setFileStatusState((prevStatus) => ({
+      ...prevStatus,
+      [page]: file,
     }));
   }, []);
 
@@ -101,7 +95,9 @@ export const CompletionProvider: React.FC<{ children: ReactNode }> = ({ children
       <ThresholdContext.Provider value={{ thresholdStatus, setThresholdStatus }}>
         <VisitedContext.Provider value={{ visitedStatus, setVisitedStatus }}>
           <OverrideContext.Provider value={{ overrideStatus, setOverrideStatus }}>
-            {children}
+            <FileContext.Provider value={{ fileStatus, setFileStatus }}>
+              {children}
+            </FileContext.Provider>
           </OverrideContext.Provider>
         </VisitedContext.Provider>
       </ThresholdContext.Provider>
@@ -137,6 +133,14 @@ export const useOverrideStatus = () => {
   const context = useContext(OverrideContext);
   if (!context) {
     throw new Error('useOverrideStatus must be used within a CompletionProvider');
+  }
+  return context;
+}
+
+export const useFileStatus = () => {
+  const context = useContext(FileContext);
+  if (!context) {
+    throw new Error('useFileStatus must be used within a CompletionProvider');
   }
   return context;
 }
