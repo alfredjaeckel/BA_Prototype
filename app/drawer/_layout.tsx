@@ -122,7 +122,13 @@ const Sidebar: React.FC = () => {
 
 
   const handleLinkClick = (index: string) => {
-    if(prevLinkIndex(index) === 'none' || (completionStatus[prevLinkIndex(index)] && !thresholdStatus[prevLinkIndex(index)])) {
+    if(`drawer/${prevLinkIndex(index)}` === segments.join('/') && !thresholdStatus[prevLinkIndex(index)]) {
+      setCompletionStatus(prevLinkIndex(index), true);
+      router.push(`/drawer/${index}`);
+      console.log("setpagetrue")
+      return;
+    }
+    else if(prevLinkIndex(index) === 'none' || (completionStatus[prevLinkIndex(index)] && !thresholdStatus[prevLinkIndex(index)])) {
       router.push(`/drawer/${index}`);
       return;
     } else {
