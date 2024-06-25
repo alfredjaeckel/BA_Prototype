@@ -38,7 +38,7 @@ const CciPage: React.FC = () => {
             params: { showPopup: 'true' }
           });
         }
-      }, 1000); // 1 second delay
+      }, 500); // 1/2 second delay
       return () => clearTimeout(timer);
     }
   }, [thresholdStatus]);
