@@ -11,9 +11,9 @@ The prototype is implemented in using React Native and the Expo framework.
 
 ### Prerequisites
 
-- **Node.js**: Install using Homebrew  $brew install node
+- **Node.js**: Install using Homebrew  `$brew install node`
 
-- **Expo**: npm install expo
+- **Expo**: `npm install expo`
 
 - **Xcode and IOS environment** - required for simulation on macOS
 
@@ -21,7 +21,7 @@ The prototype is implemented in using React Native and the Expo framework.
 
 ### Run the Prototype
 
-"npx expo start"
+`npx expo start`
 
 Sann the QR code displayed in the terminal with your mobile device.
 
