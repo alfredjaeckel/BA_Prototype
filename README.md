@@ -25,7 +25,7 @@ The prototype is implemented in using React Native and the Expo framework.
 
 Sann the QR code displayed in the terminal with your mobile device.
 
-Press i for simulating IOS
+Press i for simulating IOS once the simulator opens the device can be selected to be an ipad, and the orientation set to landscape.
 
 
 
