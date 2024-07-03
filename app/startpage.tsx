@@ -6,6 +6,11 @@ import { useNotes } from '@/contexts/NotesContext';
 import { scale } from '@/utils/scaling';
 import { Ionicons } from '@expo/vector-icons';
 
+/*-----------------------------------
+
+Startpage of the application
+
+------------------------------------*/
 
 const StartPage: React.FC = () => {
   const router = useRouter();
@@ -14,6 +19,8 @@ const StartPage: React.FC = () => {
   const {overrideStatus} = useOverrideStatus();
   const { notes, deleteNote } = useNotes();
 
+// When risk assesment is selected, go to the drawers assesment pages, 
+// if the result has already been completed go directly to the result
 
   const handleStart = () => {
     if(completionStatus['result']){
@@ -24,6 +31,7 @@ const StartPage: React.FC = () => {
     }
   };
 
+// display the status of the forecast, based on information stored in the context
   const forecastStatus = () => {
 
     if(overrideStatus['override'] && overrideStatus['newValue']){
@@ -50,6 +58,7 @@ const StartPage: React.FC = () => {
     }
   }
 
+// render the startpage, including the forecast status and any notes taken
   return (
     <View style={styles.container}>
       <View style={styles.sidebar}>

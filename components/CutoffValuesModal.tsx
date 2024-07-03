@@ -2,6 +2,14 @@ import { scale } from '@/utils/scaling';
 import React from 'react';
 import { View, Text, Button, StyleSheet, Modal, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 
+/*-----------------------------------
+
+Cut-off value modal
+
+Used to display the hand grip strength cutt-off values when required.
+
+------------------------------------*/
+
 interface CutoffValuesModalProps {
   isCutoffValuesModalVisible: boolean;
   onClose: () => void;

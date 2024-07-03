@@ -7,6 +7,13 @@ import ExclusiveRadioButtons from '@/components/ExclusiveRadioButtons';
 import Footer from '@/components/footer';
 import Header from '@/components/header';
 
+
+/*-----------------------------------
+
+Surgery Site cue page
+
+------------------------------------*/
+
 const SSPage: React.FC = () => {
   const router = useRouter();
   const { setCompletionStatus, getFirstIncompletePage } = useCompletionStatus();
@@ -15,6 +22,7 @@ const SSPage: React.FC = () => {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isHandleNext, setIsHandleNext] = useState(false);
 
+  //if the page hasn't been visited prior, and the user has interacted with the page, autoforward if threshold is reached.
   useEffect(() => {
     if (!visitedStatus['ss'] && hasInteracted) {
       const timer = setTimeout(() => {
@@ -31,6 +39,7 @@ const SSPage: React.FC = () => {
     }
   }, [thresholdStatus]);
   
+  //handle pressing the next button
   useEffect(() => {
     if (isHandleNext) {
       if (thresholdStatus['ss']) {
@@ -48,10 +57,12 @@ const SSPage: React.FC = () => {
     setIsHandleNext(true);
   };
 
+  //handle pressing the back button
   const handleBack = () => {
     router.push('/drawer/cci');
   };
 
+  //render the page
   return (
     <View style={styles.container}>
       <Header
@@ -59,6 +70,7 @@ const SSPage: React.FC = () => {
         subText="Low risk of developing POD if surgery site is peripheral"
       />
       <ScrollView style={styles.checkboxContainer}>
+        {/* Surgery site selector*/}
         <ExclusiveRadioButtons
           option1Label="Non-peripheral"
           option1Subtext="intracranial, intrathoracic, intra-abdominal or pelvic"

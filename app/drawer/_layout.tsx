@@ -7,8 +7,17 @@ import ExitModal from '@/components/ExitModal';
 import IncompleteModal from '@/components/IncompleteModal';
 import FileModal from '@/components/FileModal';
 
+/*-----------------------------------
+
+Baselayout for the cue pages
+
+Composed of sidebar, that stays the same over all pages and the content of a cue page
+
+------------------------------------*/
+
 const screenOptions = { headerShown: false };
 
+//layout for sidebar
 const Sidebar: React.FC = () => {
   const router = useRouter();
   const segments = useSegments();
@@ -22,10 +31,12 @@ const Sidebar: React.FC = () => {
   const [exitHighRisk, setExitHighRisk] = React.useState(false);
   const [exitUnknownRisk, setExitUnknownRisk] = React.useState(false);
 
+  // if one of the cues is changed, set the override status to false
   useEffect(() => {
     setOverrideStatus('override', false);
   }, [thresholdStatus]);
   
+  // handle exiting setting the overriding in favour of low risk
   useEffect(() => {
     if(exitLowRisk){
       console.log('exitLowRisk');
@@ -36,6 +47,7 @@ const Sidebar: React.FC = () => {
     }
   }, [exitLowRisk]);
 
+  // handle exiting setting the overriding in favour of high risk
   useEffect(() => {
     if(exitHighRisk){
       console.log('exitHighRisk');
@@ -46,6 +58,7 @@ const Sidebar: React.FC = () => {
     }
   }, [exitHighRisk]);
 
+  // handle exiting without setting an override
   useEffect(() => {
     if(exitUnknownRisk){
       console.log('exitUnknownRisk');
@@ -54,7 +67,8 @@ const Sidebar: React.FC = () => {
     }
   }, [exitUnknownRisk]);
 
-
+  // if a cues threshold value is changed, reset the completion status of cues further down the tree
+  // this ensures proper functioning of the sidebar links, and the progress bar
   useEffect(() => {
     setCompletionStatus('ss', fileStatus['ss']);
     setCompletionStatus('asa', fileStatus['asa']);
@@ -80,6 +94,7 @@ const Sidebar: React.FC = () => {
 
   const isCurrentPage = (path: string) => segments.join('/') === path;
 
+  //define the links for use in the sidebar
   const links = [
     { href: '/drawer/cci', label: 'CCI', index: 'cci', order: 0},
     { href: '/drawer/ss', label: 'Surgery Site', index: 'ss', order: 1},
@@ -88,6 +103,7 @@ const Sidebar: React.FC = () => {
     { href: '/drawer/result', label: 'Result', index: 'result', order: 4},
   ];
 
+  //return the previous cue
   const prevLinkIndex = (index: string): string => {
     switch(index) {
       case 'cci':
@@ -105,6 +121,7 @@ const Sidebar: React.FC = () => {
     }
   }
 
+  //values to indicate thresholds in the sidebar
   const sidebarText = (index: string, threshold: boolean): string => {
     switch(index){
       case 'cci':
@@ -120,7 +137,8 @@ const Sidebar: React.FC = () => {
     }
   }
 
-
+  //when a link is clicked, check if the previous cue is completed and the cue is allowed to be accessed
+  // if not, show the incomplete modal
   const handleLinkClick = (index: string) => {
     if(`drawer/${prevLinkIndex(index)}` === segments.join('/') && !thresholdStatus[prevLinkIndex(index)]) {
       setCompletionStatus(prevLinkIndex(index), true);
@@ -136,11 +154,13 @@ const Sidebar: React.FC = () => {
     } 
   };
 
+  //render the page content
   return (
     <View style={styles.sidebar}>
       <Text style={styles.title}>POD Risk Forecast</Text>
       <View style={styles.linkWrapper}>
         <View style={styles.circleBar}>
+          {/* map all links to display the progress bar next to them*/}
           {links.map((link, idx) => (
             <View key={link.href} style={styles.circleContainer}>
               <View
@@ -163,6 +183,7 @@ const Sidebar: React.FC = () => {
           ))}
         </View>
         <View style={styles.links}>
+          {/* map all links to show their labels and if applicable values in the sidebar*/}
           {links.map((link) => (
             <View style={styles.linkbox}
             key={link.href}
@@ -189,6 +210,7 @@ const Sidebar: React.FC = () => {
           ))}
         </View>
       </View>
+      {/* Exit Button*/}
       <TouchableOpacity 
           onPress={() => setShowExitModal(true)}
           style={styles.exitButton}
@@ -211,7 +233,7 @@ const Sidebar: React.FC = () => {
     </View>
   );
 };
-
+//page layout with sidebar and content
 const MainLayout: React.FC = () => {
   const router = useRouter();
   const { getFirstIncompletePage, getLastCompletePage } = useCompletionStatus();
@@ -220,7 +242,7 @@ const MainLayout: React.FC = () => {
   const [fileModal, setFileModal] = React.useState(false);
   const [showFileModal, setShowFileModal] = React.useState(false);
   
-
+  //default to showing the first cue that has not been completed, by the user or from patient data
   useEffect(() => {
     if (segments.join('/') === 'drawer') {
       const firstIncompletePage = getFirstIncompletePage();
@@ -232,6 +254,7 @@ const MainLayout: React.FC = () => {
     }
   }, [segments, getFirstIncompletePage, router]);
 
+  //show the file modal for 6 seconds when a patient data is loaded for a cue
   useEffect(() => {
     if (fileModal === true) {
       setShowFileModal(true);
@@ -240,6 +263,7 @@ const MainLayout: React.FC = () => {
     }
   }, [fileModal]);
 
+  //render the page
   return (
     <View style={styles.container}>
       <Sidebar />

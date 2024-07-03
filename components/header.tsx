@@ -2,6 +2,13 @@ import { scale } from '@/utils/scaling';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
+/*-----------------------------------
+
+Header Component
+
+Provides a header for the screens in /drawer, takes header title and sub title as props
+
+------------------------------------*/
 
 interface HeaderProps {
   mainText?: string;

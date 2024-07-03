@@ -2,6 +2,14 @@ import { scale } from '@/utils/scaling';
 import React from 'react';
 import { View, Text, StyleSheet, Modal, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 
+/*-----------------------------------
+
+Incomplete Modal
+
+Openes to inform user they can not click on a certain cue in the sidebar, if its not its turn yet.
+
+------------------------------------*/
+
 interface IncompleteModalProps {
   isIncompleteModalVisible: boolean;
   onClose: () => void;

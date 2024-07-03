@@ -2,6 +2,14 @@ import React from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
+/*-----------------------------------
+
+Checkbox component
+
+provides a simple checkbox 
+
+------------------------------------*/
+
 interface CheckboxProps {
   value: boolean;
   onValueChange: (value: boolean) => void;

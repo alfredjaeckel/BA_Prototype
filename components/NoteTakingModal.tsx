@@ -5,6 +5,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { scale } from '@/utils/scaling';
 
+/*-----------------------------------
+
+Note Taking Modal
+
+Provides user with the option to take notes
+
+Previous notes are displayed and can be deleted
+
+------------------------------------*/
+
 interface NoteTakingModalProps {
   isNoteModalVisible: boolean;
   onClose: () => void;
@@ -15,6 +25,7 @@ const NoteTakingModal: React.FC<NoteTakingModalProps> = ({ isNoteModalVisible, o
   const { notes, addNote, deleteNote, recoverLastDeletedNote } = useNotes();
   const [isUndoVisible, setIsUndoVisible] = useState(false);
 
+  //add a note
   const handleAddNote = () => {
     if (note.trim()) {
       addNote(note);
@@ -22,12 +33,13 @@ const NoteTakingModal: React.FC<NoteTakingModalProps> = ({ isNoteModalVisible, o
     }
   };
 
+  //delete a note, show a button to undo deletion
   const handleDeleteNote = (index: number) => {
     deleteNote(index);
     setIsUndoVisible(true);
     setTimeout(() => {
       setIsUndoVisible(false);
-    }, 7000); // Hide undo button after 5 seconds
+    }, 7000); // Hide undo button after 7 seconds
   };
 
   return (
@@ -46,6 +58,7 @@ const NoteTakingModal: React.FC<NoteTakingModalProps> = ({ isNoteModalVisible, o
         </View>
         <View style={styles.bodyContainer}>
           <View style={styles.inputContainer}>
+            {/* Input field for notes */}
             <TextInput
               style={styles.input}
               placeholder="Enter your note here"
@@ -55,11 +68,13 @@ const NoteTakingModal: React.FC<NoteTakingModalProps> = ({ isNoteModalVisible, o
               returnKeyType="done"
               autoFocus
             />
+            {/* Add button to add note */}
             <TouchableOpacity onPress={handleAddNote} style={styles.addButton}>
               <Text style={styles.addButtonText}>Add</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.notesContainer}>
+            {/* List of notes, with option to delete */}
             {notes.map((note, index) => (
               <View key={index} style={styles.noteContainer}>
               <Text style={styles.note}>{note}</Text>
@@ -69,6 +84,7 @@ const NoteTakingModal: React.FC<NoteTakingModalProps> = ({ isNoteModalVisible, o
             </View>
             ))}
           </View>
+          {/* Undo button to recover last deleted note */}
           {isUndoVisible && (
             <View style={styles.undoPosition}>
               <View style={styles.undoContainer}>

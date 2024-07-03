@@ -2,6 +2,13 @@ import { scale } from '@/utils/scaling';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
+/*-----------------------------------
+
+Footer Component
+
+Provides a footer for the screens in /drawer
+
+------------------------------------*/
 
 interface FooterProps {
   back?: boolean;
@@ -15,6 +22,7 @@ interface FooterProps {
 const Footer: React.FC<FooterProps> = ({ back=true, next=true, backText='Back', nextText='Next', handleBack, handleNext }) => {
   return (
     <View style={styles.footer}>
+      {/* Back Button */}
       {back && (
       <TouchableOpacity 
         onPress={handleBack}
@@ -26,6 +34,7 @@ const Footer: React.FC<FooterProps> = ({ back=true, next=true, backText='Back', 
       {!back && (
         <View/>
       )}
+      {/* Next Button */}
       {next && (
       <TouchableOpacity 
         onPress={handleNext}

@@ -3,6 +3,14 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { scale } from '@/utils/scaling';
 
+/*-----------------------------------
+
+Individual Radio Button Component
+
+Use for one of the mutually exclusive options in ExclusiveRadioButtons
+
+------------------------------------*/
+
 interface RadioButtonProps {
   label: string;
   subtext: string;

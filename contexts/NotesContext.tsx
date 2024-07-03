@@ -1,5 +1,13 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
+/*-----------------------------------
+
+Notes Context
+
+saves notes and provides functions to add, delete, and recover notes
+
+------------------------------------*/
+
 type NotesContextType = {
   notes: string[];
   addNote: (note: string) => void;
@@ -13,16 +21,19 @@ export const NotesProvider = ({ children }: { children: ReactNode }) => {
   const [notes, setNotes] = useState<string[]>([]);
   const [lastDeletedNote, setLastDeletedNote] = useState<{ note: string; index: number } | null>(null);
 
+  //add a note
   const addNote = (note: string) => {
     setNotes((prevNotes) => [...prevNotes, note]);
   };
 
+  //delete a note
   const deleteNote = (index: number) => {
     const noteToDelete = notes[index];
     setNotes((prevNotes) => prevNotes.filter((_, i) => i !== index));
     setLastDeletedNote({ note: noteToDelete, index });
   };
 
+  //recover the last deleted note
   const recoverLastDeletedNote = () => {
     if (lastDeletedNote) {
       setNotes((prevNotes) => {

@@ -3,6 +3,12 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
 import { View, Text, Button, StyleSheet, Modal, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 
+/*-----------------------------------
+
+Modal to show after automatic forewarding
+
+------------------------------------*/
+
 interface AutoNavigationModalProps {
   isAutoNavigationModalVisible: boolean;
   onClose: () => void;
@@ -27,6 +33,7 @@ const AutoNavigationModal: React.FC<AutoNavigationModalProps> = ({ isAutoNavigat
                     </TouchableOpacity>
                   </View>
                   <Text style={styles.modalText}>Navigated here automatically.</Text>
+                  {/* Undo button, undoes automatic forewarding*/}
                   <TouchableOpacity onPress={onUndo} style={styles.undoButton}>
                     <Text style={styles.undoButtonText}>Undo</Text>
                     <MaterialCommunityIcons name="undo-variant" size={24} color="red" />

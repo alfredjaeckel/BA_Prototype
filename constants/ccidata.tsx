@@ -1,6 +1,14 @@
 import { useState } from 'react';
 import initialConditions from '@/assets/conditions.json';
 
+/*-----------------------------------
+
+CCI Data
+
+Stores the conditions and their weights, and value for the Charlson Comorbidity Index
+
+------------------------------------*/
+
 type Condition = {
   index: number;
   name: string;
@@ -9,10 +17,11 @@ type Condition = {
   showInfo: boolean;
   info: string;
 };
-
+//initialize conditions from confitions.json
 const useConditions = () => {
   const [conditionState, setConditionState] = useState<Condition[]>(initialConditions);
 
+  // Initialize the sum of condition values
   const initSumConditionValues = (conditions: Condition[]): number => {
     return conditions.reduce((sum, condition) => {
       return condition.value ? sum + condition.weight : sum;
@@ -21,6 +30,7 @@ const useConditions = () => {
 
   let conditionSum: number = initSumConditionValues(conditionState);
 
+  //set condition value if it is checked
   const setConditionValue = (index: number, value: boolean): void => {
     setConditionState(prevState => {
       const condition = prevState.find(c => c.index === index);
@@ -32,6 +42,7 @@ const useConditions = () => {
     });
   };
 
+  //update contion weight when severity selector is used
   const setConditionWeight = (index: number, weight: number): void => {
     setConditionState(prevState => {
       const condition = prevState.find(c => c.index === index);

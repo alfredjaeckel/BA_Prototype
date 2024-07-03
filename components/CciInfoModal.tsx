@@ -2,6 +2,14 @@ import { scale } from '@/utils/scaling';
 import React from 'react';
 import { View, Text, StyleSheet, Modal, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 
+/*-----------------------------------
+
+CCI Info Modal
+
+Used to show detailed description for some of the illnesses in the CCI page.
+
+------------------------------------*/
+
 interface CciInfoModalProps {
   isCciInfoModalVisible: boolean;
   name: string;

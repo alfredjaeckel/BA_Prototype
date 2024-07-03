@@ -1,4 +1,12 @@
 import { Dimensions } from 'react-native';
+/*-----------------------------------
+
+Scaling Utility
+
+scales the screen elements based on the screens dimensions, 
+to fit the design to devices other that the one it was designed on (IPad Pro 11 inch)
+
+------------------------------------*/
 
 // Target dimensions
 const DESIGN_WIDTH = 1194;

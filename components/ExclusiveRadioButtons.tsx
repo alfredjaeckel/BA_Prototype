@@ -1,6 +1,14 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import RadioButton from './RadioButton';
+
+/*-----------------------------------
+
+Exclusive Radio Buttons Component
+
+Returns a selector with two mutually exclusive options
+
+------------------------------------*/
 
 interface ExclusiveRadioButtonsProps {
   option1Label: string;

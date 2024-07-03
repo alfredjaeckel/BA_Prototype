@@ -9,6 +9,13 @@ import CciInfoModal from '@/components/CciInfoModal';
 import Footer from '@/components/footer';
 import Header from '@/components/header';
 
+
+/*-----------------------------------
+
+CCI cue page
+
+------------------------------------*/
+
 const CciPage: React.FC = () => {
   const { conditionState, setConditionValue, setConditionWeight, sumConditionValues } = useConditions();
   const [isCciInfoVisible, setIsCciInfoVisible] = useState(false);
@@ -20,6 +27,7 @@ const CciPage: React.FC = () => {
   const { visitedStatus, setVisitedStatus } = useVisitedStatus();
   const [isHandleNext, setIsHandleNext] = useState(false);
   
+  //update the threshold based on CCI calculation
   useEffect(() => {
     const sum = sumConditionValues();
     if (thresholdStatus['cci'] !== (sum > 1)) {
@@ -27,6 +35,7 @@ const CciPage: React.FC = () => {
     }
   }, [conditionState, setThresholdStatus, sumConditionValues]);
 
+  //if the page hasn't been visited prior, and the user has interacted with the page, autoforward if threshold is reached.
   useEffect(() => {
     if (!visitedStatus['cci'] && hasInteracted) {
       const timer = setTimeout(() => {
@@ -43,6 +52,7 @@ const CciPage: React.FC = () => {
     }
   }, [thresholdStatus]);
 
+  //handle pressing the next button
   useEffect(() => {
     if (isHandleNext) {
       if (thresholdStatus['cci']) {
@@ -55,7 +65,12 @@ const CciPage: React.FC = () => {
     }
   }, [isHandleNext]);
 
-  
+  const handleNext = () => {
+    setCompletionStatus('cci', true);
+    setIsHandleNext(true);
+  };
+
+  //handle inputs to checkboxes, and severity selectors
   const handleCheckboxChange = useCallback((index: number, value: boolean) => {
     setHasInteracted(true);
     setConditionValue(index, value);
@@ -66,17 +81,14 @@ const CciPage: React.FC = () => {
     setConditionWeight(index, weight);
   }, [setConditionWeight]);
   
-
+  //open the info modal when the question mark is clicked
   const handleQuestionMarkClick = (name: string, info: string) => {
     setCciInfoContent({ name, info });
     setIsCciInfoVisible(true);
   };
 
-  const handleNext = () => {
-    setCompletionStatus('cci', true);
-    setIsHandleNext(true);
-  };
 
+  //render the page
   return (
     <View style={styles.container}>
       <Header
@@ -84,6 +96,7 @@ const CciPage: React.FC = () => {
         subText="High risk of developing POD if CCI > 1"
       />
       <ScrollView>
+        {/* CCI Illness Checkboxes*/}
         <View style={styles.checkboxContainer}>
           {conditionState.map((condition) => (
             <View key={condition.index}>

@@ -8,6 +8,12 @@ import CutoffValuesModal from '@/components/CutoffValuesModal';
 import Footer from '@/components/footer';
 import Header from '@/components/header';
 
+/*-----------------------------------
+
+Frailty cue page
+
+------------------------------------*/
+
 const FrailtyPage: React.FC = () => {
   const router = useRouter();
   const { setCompletionStatus } = useCompletionStatus();
@@ -16,6 +22,7 @@ const FrailtyPage: React.FC = () => {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isCutoffVisible, setIsCutoffVisible] = useState(false);
 
+  //if the page hasn't been visited prior, and the user has interacted with the page, autoforward if threshold is reached.
   useEffect(() => {
     if (!visitedStatus['frailty'] && hasInteracted) {
       const timer = setTimeout(() => {
@@ -32,17 +39,19 @@ const FrailtyPage: React.FC = () => {
     }
   }, [thresholdStatus]);
 
-
+  //handle pressing the next button
   const handleNext = () => {
     setCompletionStatus('frailty', true);
     setVisitedStatus('frailty', true);
     router.push('/drawer/result');
   };
 
+  //handle pressing the back button
   const handleBack = () => {
     router.push('/drawer/asa');
   };
 
+  //render the page
   return (
     <View style={styles.container}>
       <Header
@@ -50,6 +59,7 @@ const FrailtyPage: React.FC = () => {
         subText={"Low risk of developing POD if stable\n High risk of developing POD if pre-frail or frail"}
       />
       <View style={styles.checkboxContainer}>
+        {/* Frailty selector*/}
         <ExclusiveRadioButtons
           option1Label="Stable"
           option1Subtext="patient exhibits non of the frailty criteria"
@@ -61,6 +71,7 @@ const FrailtyPage: React.FC = () => {
             setHasInteracted(true);
           }}
         />
+        {/* Frailty Criteria*/}
         <View style={styles.criterionContainer}>
           <View style={styles.frailtyCriterion}>
             <Text style={styles.litteBoldText}>Fried Frailty Criteria</Text>

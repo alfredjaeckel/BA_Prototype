@@ -1,6 +1,15 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
 import initialData from '@/assets/initContext.json';
 
+/*-----------------------------------
+
+Completion Context
+
+Provides Completion, Threshold, Page Visited, File loaded, and override status
+
+------------------------------------*/
+
+//track whether a page is completed
 interface CompletionContextType {
   completionStatus: Record<string, boolean>;
   setCompletionStatus: (page: string, status: boolean) => void;
@@ -8,22 +17,25 @@ interface CompletionContextType {
   getLastCompletePage: () => string;
 }
 
+//track whether a page has passed the cue threshold
 interface ThresholdContextType {
   thresholdStatus: Record<string, boolean>;
   setThresholdStatus: (page: string, threshold: boolean) => void;
 }
 
+//track whether a page has been visited
 interface VisitedContextType {
   visitedStatus: Record<string, boolean>;
   setVisitedStatus: (page: string, visited: boolean) => void;
 }
 
+//track whether a page contains data loaded from patient file
 interface FileContextType {
   fileStatus: Record<string, boolean>;
   setFileStatus: (page: string, visited: boolean) => void;
 }
 
-
+//track whether a override has been set
 interface OverrideContextType {
   overrideStatus: Record<string, boolean>;
   setOverrideStatus: (page: string, override: boolean) => void;
@@ -38,13 +50,14 @@ const OverrideContext = createContext<OverrideContextType | undefined>(undefined
 
 export const CompletionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
+  //initialize from initContext.json
   const [completionStatus, setCompletionStatusState] = useState<Record<string, boolean>>(initialData.completionStatus);
   const [thresholdStatus, setThresholdStatusState] = useState<Record<string, boolean>>(initialData.thresholdStatus);
   const [visitedStatus, setVisitedStatusState] = useState<Record<string, boolean>>(initialData.visitedStatus);
   const [fileStatus, setFileStatusState] = useState<Record<string, boolean>>(initialData.fileStatus);
   const [overrideStatus, setOverrideStatusState] = useState<Record<string, boolean>>(initialData.overrideStatus);
 
-  
+  //set funktions
   const setCompletionStatus = useCallback((page: string, status: boolean) => {
     setCompletionStatusState((prevStatus) => ({
       ...prevStatus,
@@ -80,11 +93,13 @@ export const CompletionProvider: React.FC<{ children: ReactNode }> = ({ children
     }));
   }, []);
 
+  //returns the first page that is not completed
   const getFirstIncompletePage = useCallback(() => {
     const pages = ['cci', 'ss', 'asa', 'frailty', 'result'];
     return pages.find((page) => !completionStatus[page]) || 'cci';
   }, [completionStatus]);
 
+  //returns the last page that is completed
   const getLastCompletePage = useCallback(() => {
     const pages = ['frailty', 'asa', 'ss', 'cci'];
     return pages.find((page) => completionStatus[page]) || 'cci';

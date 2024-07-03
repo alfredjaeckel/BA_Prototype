@@ -2,6 +2,15 @@ import { scale } from '@/utils/scaling';
 import React from 'react';
 import { View, Text, Button, StyleSheet, Modal, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 
+
+/*-----------------------------------
+
+File Modal
+
+Opened to inform user if data has been imported from patient file
+
+------------------------------------*/
+
 interface FileModalProps {
   isFileModalVisible: boolean;
   onClose: () => void;

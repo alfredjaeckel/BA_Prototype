@@ -4,6 +4,14 @@ import Selector from './selector';
 import { scale } from '@/utils/scaling';
 import Checkbox from './checkbox';
 
+/*-----------------------------------
+
+CCI Checkbox component
+
+Takes all the information required to display a given illness on the CCI page.
+
+------------------------------------*/
+
 interface CciCheckboxProps {
   index: number;
   name: string;
@@ -27,6 +35,7 @@ const CciCheckbox: React.FC<CciCheckboxProps> = ({ index, name, weight, value, s
         <Text style={styles.bigText}>{name}</Text>
         
       </View>
+      {/* If the illness is liver disease or diabetes mellitus, display a selector for severity */}
       <View style={styles.checkboxEnd}>
         {name === 'Liver disease' && (
           <Selector

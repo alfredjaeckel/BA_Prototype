@@ -4,6 +4,15 @@ import NoteTakingModal from './NoteTakingModal';
 import { scale } from '@/utils/scaling';
 import { AntDesign } from '@expo/vector-icons';
 
+
+/*-----------------------------------
+
+Exit Modal
+
+Opened after tapping exit button, allows the user to leave the assesment, setting an override if they want
+
+------------------------------------*/
+
 interface ExitModalProps {
   isExitModalVisible: boolean;
   onClose: () => void;
@@ -27,6 +36,7 @@ const ExitModal: React.FC<ExitModalProps> = ({ isExitModalVisible, onClose, setE
                 </TouchableOpacity>
               </View>
               <View style={styles.buttonContainer}>
+                {/* Take notes button, opens note taking modal */}
                 <TouchableOpacity onPress={() => setIsNoteModalVisible(true)} style={styles.notesButton}>
                   <Text style={styles.notesButtonText}>Take Notes</Text>
                   <AntDesign name="form" size={24} color="black" />

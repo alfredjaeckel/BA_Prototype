@@ -2,6 +2,14 @@ import { scale } from '@/utils/scaling';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
+/*-----------------------------------
+
+Selector Component
+
+Used to provide severity selection for liver disease and diabetes mellitus in the CCI page.
+
+------------------------------------*/
+
 type SelectorProps = {
   weight: number;
   highWeight: number;

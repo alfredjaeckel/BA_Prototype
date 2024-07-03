@@ -7,6 +7,12 @@ import ExclusiveRadioButtons from '@/components/ExclusiveRadioButtons';
 import Footer from '@/components/footer';
 import Header from '@/components/header';
 
+/*-----------------------------------
+
+ASA PS cue page
+
+------------------------------------*/
+
 const ASAPage: React.FC = () => {
   const router = useRouter();
   const { setCompletionStatus, getFirstIncompletePage } = useCompletionStatus();
@@ -15,6 +21,7 @@ const ASAPage: React.FC = () => {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isHandleNext, setIsHandleNext] = useState(false);
 
+  //if the page hasn't been visited prior, and the user has interacted with the page, autoforward if threshold is reached.
   useEffect(() => {
     if (!visitedStatus['asa'] && hasInteracted) {
       const timer = setTimeout(() => {
@@ -31,6 +38,7 @@ const ASAPage: React.FC = () => {
     }
   }, [thresholdStatus]);
 
+  //handle pressing the next button
   useEffect(() => {
     if (isHandleNext) {
       if (thresholdStatus['asa']) {
@@ -48,11 +56,12 @@ const ASAPage: React.FC = () => {
     setIsHandleNext(true);
   };
 
+  //handle pressing the back button
   const handleBack = () => {
     router.push('/drawer/ss');
   };
 
-
+  //render the page
   return (
     <View style={styles.container}>
       <Header
@@ -60,6 +69,7 @@ const ASAPage: React.FC = () => {
         subText="High risk of developing POD if ASA PS III or higher"
       />
       <ScrollView style={styles.checkboxContainer}>
+        {/* ASA PS selector*/}
         <ExclusiveRadioButtons
           option1Label="ASA I / II"
           option1Subtext="a patient with at most mild systemic disease"
