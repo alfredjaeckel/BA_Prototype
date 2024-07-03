@@ -39,7 +39,6 @@ const Sidebar: React.FC = () => {
   // handle exiting setting the overriding in favour of low risk
   useEffect(() => {
     if(exitLowRisk){
-      console.log('exitLowRisk');
       setOverrideStatus('override', true);
       setOverrideStatus('newValue', false);
       setShowExitModal(false);
@@ -50,7 +49,6 @@ const Sidebar: React.FC = () => {
   // handle exiting setting the overriding in favour of high risk
   useEffect(() => {
     if(exitHighRisk){
-      console.log('exitHighRisk');
       setOverrideStatus('override', true);
       setOverrideStatus('newValue', true);
       setShowExitModal(false);
@@ -61,7 +59,6 @@ const Sidebar: React.FC = () => {
   // handle exiting without setting an override
   useEffect(() => {
     if(exitUnknownRisk){
-      console.log('exitUnknownRisk');
       setShowExitModal(false);
       router.push('startpage');
     }
@@ -143,7 +140,6 @@ const Sidebar: React.FC = () => {
     if(`drawer/${prevLinkIndex(index)}` === segments.join('/') && !thresholdStatus[prevLinkIndex(index)]) {
       setCompletionStatus(prevLinkIndex(index), true);
       router.push(`/drawer/${index}`);
-      console.log("setpagetrue")
       return;
     }
     else if(prevLinkIndex(index) === 'none' || (completionStatus[prevLinkIndex(index)] && !thresholdStatus[prevLinkIndex(index)])) {
