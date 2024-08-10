@@ -1,6 +1,8 @@
 # Prototype for Bachelor Thesis
 
 This is a prototype for my Bachelor Thesis in Computer Science at the Freie Universität Berlin, titled **"Assisting the Forecast of Postoperative Delirium by Creating a User Interface for Decision Trees"**.
+Thesis Text: https://box.fu-berlin.de/s/jA8iEs2tfBSn2es
+Presentation Video: https://box.fu-berlin.de/s/aC8R4FPK2N6SPs2
 
 ## Purpose
 
