@@ -2,9 +2,9 @@
 
 This is a prototype for my Bachelor Thesis in Computer Science at the Freie Universität Berlin, titled **"Assisting the Forecast of Postoperative Delirium by Creating a User Interface for Decision Trees"**.
 
-Thesis Text: https://box.fu-berlin.de/s/jA8iEs2tfBSn2es
+Thesis Text: https://alfredjaeckel.github.io/assets/files/Jaeckel_BA_Thesis.pdf
 
-Presentation Video: https://box.fu-berlin.de/s/aC8R4FPK2N6SPs2
+Presentation Video: https://youtu.be/BdSlFxUCT6k
 
 ## Purpose
 
@@ -35,4 +35,4 @@ Press i for simulating IOS once the simulator opens the device can be selected t
 
 These instruction are only tested for macOS steps on other operating systems might vary slightly.
 
-If you have any questions or feedback, please contact me at alfredjackel@zedat.fu-berlin.de
+If you have any questions or feedback, please contact me at alfred.thomas.jaeckel@gmail.com
